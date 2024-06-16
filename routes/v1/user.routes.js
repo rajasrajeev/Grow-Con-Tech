@@ -1,13 +1,13 @@
 const express = require('express');
 const uploadFiles = require('../../middlewares/image.middleware');
 const { 
-    createUserHandler,
-    verifyEmailHandler,
+    /* createUserHandler,
+    verifyEmailHandler, */
     loginHandler,
-    profileHandler,
+    /* profileHandler,
     changePasswordHandler,
     forgotPasswordHandler,
-    resetPasswordHandler
+    resetPasswordHandler */
 } = require('../../controllers/user.controller');
 const { userAuth, checkRole } = require('../../middlewares/auth.middleware');
 
@@ -17,9 +17,9 @@ const uploads = uploadFiles.fields([{name: 'image', maxCount: 1}]);
 
 module.exports = (app) => {
 
-    // authentication
+    /* // authentication
     router.post('/signup', uploads, createUserHandler);
-    router.patch('/verifyemail/:verificationCode', verifyEmailHandler);
+    router.patch('/verifyemail/:verificationCode', verifyEmailHandler); */
     router.post('/login', loginHandler);
 
    /*  // induvidual profile
@@ -28,10 +28,10 @@ module.exports = (app) => {
     router.patch('/update-doctor-profile', uploads, userAuth, updateDoctorProfileHandler);
     router.patch('/update-shop-profile', uploads, userAuth, updateShopProfileHandler); */
     
-    // change and reset password
+    /* // change and reset password
     router.patch('/change-password', userAuth, changePasswordHandler);
     router.post('/forgotpassword', forgotPasswordHandler);
-    router.patch('/resetpassword/:resetToken', resetPasswordHandler);
+    router.patch('/resetpassword/:resetToken', resetPasswordHandler); */
    /*  
     // for admin get list, detail update and deletion of all users
     router.get('/users', userAuth, checkRole(["admin"]), getUsersHandler);

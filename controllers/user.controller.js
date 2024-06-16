@@ -1,17 +1,17 @@
 const { 
-    signup, 
+    /* signup,  */
     signin,
     alreadyExist, 
-    emailVerification,
+    /* emailVerification,
     profile,
     passwordChange,
     resetPassword,
-    forgotPassword
+    forgotPassword */
 } = require("../services/user.service");
 const { checkUserValidation } = require("../utils/user.validation");
 
 
-const createUserHandler = async (req, res, next) => {
+/* const createUserHandler = async (req, res, next) => {
     try {
         await checkUserValidation(req, res);
 
@@ -39,7 +39,7 @@ const verifyEmailHandler = async(req, res, next) => {
     } catch(err) {
         next(err);
     }
-}
+} */
 
 
 const loginHandler = async(req, res, next) => {
@@ -58,7 +58,7 @@ const loginHandler = async(req, res, next) => {
 }
 
 
-const profileHandler = async(req, res, next) => {
+/* const profileHandler = async(req, res, next) => {
     try {
         const data = await profile(req.user);
         return res.status(200).send(data);
@@ -100,14 +100,14 @@ const resetPasswordHandler = async (req, res, next) => {
     } catch(err) {
         next(err);
     }
-}
+} */
 
 module.exports = {
-    createUserHandler,
-    verifyEmailHandler,
+    /* createUserHandler,
+    verifyEmailHandler, */
     loginHandler,
-    profileHandler,
+    /* profileHandler,
     changePasswordHandler,
     forgotPasswordHandler,
-    resetPasswordHandler
+    resetPasswordHandler */
 }
