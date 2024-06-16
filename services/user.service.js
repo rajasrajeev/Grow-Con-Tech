@@ -11,7 +11,7 @@ const paginate = createPaginator();
 const alreadyExist = async (email) => {
     const user = await prisma.user.findFirst({
         where: {
-            email: email
+            username: email
         }
     });
     if(user) return "User with same email already exists";
@@ -26,17 +26,10 @@ const generatePasswordHash = async (password) => {
 
 
 const generateToken = (user) => {
-    let role = 'user';
-    
-    if(user.isAdmin) role = 'admin';
-    else if(user.isDoctor) role = 'doctor';
-    else if(user.isShop) role = 'shop';
-    else if(user.isPublic) role = 'public';
-
     const token = jwt.sign({
         user_id: user.id,
-        email: user.email,
-        role: role
+        email: user.username,
+        role: user.role
     }, SECRET, {expiresIn: "7 days"});
 
     const result = {
@@ -48,7 +41,7 @@ const generateToken = (user) => {
     return result;
 }
 
-// const getCountry = async(id) => {
+/* // const getCountry = async(id) => {
 //     const country = await prisma.country.findFirst({
 //         where: {
 //             id: id
@@ -195,14 +188,15 @@ const emailVerification = async(verifyCode) => {
     } catch(err) {
         throw ({status: 403, message: "Cannot verify email!"});
     }
-}
+} */
 
 
 const signin = async (username, password) => {
     const user = await prisma.user.findFirst({
         where: {
             username: username
-        }
+        },
+        include: { vendor: true, contractor: true, warehouse: true, backend: true }
     });
 
     if (!user) throw ({status: 401, message: "Invalid user credentials!"});
@@ -211,15 +205,36 @@ const signin = async (username, password) => {
     const isMatch = await bcrypt.compare(password, user.password);
 
     if(isMatch) {
+        let userData;
+        switch (user.role) {
+            case 'VENDOR':
+              userData = user.vendor;
+              break;
+            case 'CONTRACTOR':
+              userData = user.contractor;
+              break;
+            case 'WAREHOUSE':
+              userData = user.warehouse;
+              break;
+            case 'BACKEND':
+              userData = user.backend;
+              break;
+          }
         const data = generateToken(user);
-        return data;
+        return {
+            token: data,
+            user: {
+                ...user,
+                roleData: userData
+            }
+        };
     } else {
         throw ({status: 401, message: "Invalid user credentials"});
     } 
 }
 
 
-const profile = async (user) => {
+/* const profile = async (user) => {
     var profileDetail = {};
 
     if(user.isAdmin) {
@@ -356,7 +371,7 @@ const resetPassword = async(resetToken, password) => {
     });
 
     return updated;
-}
+} */
 
 
 /* const publicProfileUpdate = async(url, user, payload, files) => {

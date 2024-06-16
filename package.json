@@ -1,7 +1,7 @@
 {
-  "name": "pet-api",
+  "name": "grow-con-tech-api",
   "version": "1.0.0",
-  "description": "pet shop and ecom",
+  "description": "API for admin panel of grow con tech",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
