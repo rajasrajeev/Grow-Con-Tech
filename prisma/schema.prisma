@@ -1,0 +1,175 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Country {
+  @@map("countries")
+  
+  id     Int    @id @default(autoincrement())
+  name   String @unique
+
+  states  State[]
+  publics Public[]
+  doctors Doctor[]
+  shops   Shop[]
+}
+
+model State {
+  @@map("states")
+  
+  id        Int    @id @default(autoincrement())
+  name      String @unique
+  country   Country  @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  countryId Int
+
+  districts District[]
+  publics   Public[]
+  doctors   Doctor[]
+  shops     Shop[]
+}
+
+model District {
+  @@map("districts")
+  
+  id      Int    @id @default(autoincrement())
+  name    String @unique
+  state   State  @relation(fields: [stateId], references: [id], onDelete: Cascade)
+  stateId Int
+
+  publics Public[]
+  doctors Doctor[]
+  shops   Shop[]
+}
+
+model User {
+  @@map("users")
+  
+  id                 Int      @id @default(autoincrement())
+  email              String   @unique
+  username           String   @unique
+  password           String
+
+  isAdmin            Boolean  @default(false)
+  isShop             Boolean  @default(false)
+  isPublic           Boolean  @default(false)
+  isDoctor           Boolean  @default(false)
+
+  verified           Boolean? @default(false) 
+  verificationCode   String? @db.Text @unique
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  passwordResetToken String?
+  passwordResetAt    DateTime?
+
+  public Public?
+  doctor Doctor?
+  shop   Shop?
+
+  @@unique([email, passwordResetToken])
+  @@index([email, passwordResetToken])
+}
+
+model Public {
+  @@map("publics")
+
+  id         Int      @id @default(autoincrement())
+  name       String
+  address    String?
+  image      String?
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int @unique
+  country    Country?  @relation(fields: [countryId], references: [id], onDelete: SetNull)
+  countryId  Int?
+  state      State?    @relation(fields: [stateId], references: [id], onDelete: SetNull)
+  stateId    Int?
+  district   District? @relation(fields: [districtId], references: [id], onDelete: SetNull)
+  districtId Int?
+
+  products   Product[]
+}
+
+model Doctor {
+  @@map("doctors")
+
+  id         Int      @id @default(autoincrement())
+  name       String
+  address    String?
+  speciality String
+  image      String?
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int @unique
+  country    Country?  @relation(fields: [countryId], references: [id], onDelete: SetNull)
+  countryId  Int?
+  state      State?   @relation(fields: [stateId], references: [id], onDelete: SetNull)
+  stateId    Int?
+  district   District? @relation(fields: [districtId], references: [id], onDelete: SetNull)
+  districtId Int?
+
+}
+
+model Shop {
+  @@map("shops")
+
+  id         Int      @id @default(autoincrement())
+  name       String
+  address    String?
+  phone      String
+  type       String
+  image      String?
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int @unique
+  country    Country?  @relation(fields: [countryId], references: [id], onDelete: SetNull)
+  countryId  Int?
+  state      State?    @relation(fields: [stateId], references: [id], onDelete: SetNull)
+  stateId    Int?
+  district   District? @relation(fields: [districtId], references: [id], onDelete: SetNull)
+  districtId Int?
+
+  products Product[]
+}
+
+model ProductType {
+  @@map("product_types")
+
+  id       Int    @id @default(autoincrement())
+  title    String @unique
+  animal   Boolean @default(false)
+  medic    Boolean @default(false)
+  products Product[]
+}
+
+model Product{
+  @@map("products")
+
+  id       Int          @id @default(autoincrement())
+  title    String
+  price    Int
+  expiry   DateTime?
+  desc     String?
+  count    Int?       
+  type     ProductType?  @relation(fields: [typeId], references: [id], onDelete: SetNull)
+  typeId   Int?
+
+  species  String?
+  color    String?
+
+  shop     Shop?         @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  shopId   Int?
+  public   Public?       @relation(fields: [publicId], references: [id], onDelete: Cascade)
+  publicId Int?
+
+  photos String[]
+}
