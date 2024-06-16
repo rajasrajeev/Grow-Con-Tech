@@ -20,85 +20,87 @@ model User {
   created_at        DateTime  @default(now())
   updated_at        DateTime  @updatedAt
 
-  vendor            Vendor?
-  contractor        Contractor?
-  warehouse         Warehouse?
-  backend           Backend?
+  vendor     Vendor?
+  contractor Contractor?
+  warehouse  Warehouse?
+  backend    Backend?
 }
 
 model Vendor {
-  id             Int     @id @default(autoincrement())
-  user           User    @relation(fields: [user_id], references: [id])
-  user_id        Int     @unique
-  company_name   String
-  phone          String
-  email          String
-  address        String
-  pin            String
-  state          State   @relation(fields: [stateId], references: [id])
-  stateId        Int
-  district       String
-  city           City    @relation(fields: [cityId], references: [id])
-  cityId         Int
-  pan            String
-  gst            String
-  licence        String
+  id           Int    @id @default(autoincrement())
+  user         User   @relation(fields: [user_id], references: [id])
+  user_id      Int    @unique
+  company_name String
+  phone        String
+  email        String
+  address      String
+  pin          String
+  state        State  @relation(fields: [stateId], references: [id])
+  stateId      Int
+  district     String
+  city         City   @relation(fields: [cityId], references: [id])
+  cityId       Int
+  pan          String
+  gst          String
+  licence      String
 }
 
 model Contractor {
-  id             Int     @id @default(autoincrement())
-  user           User    @relation(fields: [user_id], references: [id])
-  user_id        Int     @unique
-  name           String
-  company_name   String
-  phone          String
-  email          String
-  licence        String
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
+  id           Int      @id @default(autoincrement())
+  user         User     @relation(fields: [user_id], references: [id])
+  user_id      Int      @unique
+  name         String
+  company_name String
+  phone        String
+  email        String
+  licence      String
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 }
 
 model Warehouse {
-  id             Int     @id @default(autoincrement())
-  user           User    @relation(fields: [user_id], references: [id])
-  user_id        Int     @unique
-  name           String
-  location       String
-  incharge_name  String
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
+  id            Int      @id @default(autoincrement())
+  user          User     @relation(fields: [user_id], references: [id])
+  user_id       Int      @unique
+  name          String
+  location      String
+  incharge_name String
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 }
 
 model Backend {
-  id             Int     @id @default(autoincrement())
-  user           User    @relation(fields: [user_id], references: [id])
-  user_id        Int     @unique
-  name           String
-  email          String
-  phone          String
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  user       User     @relation(fields: [user_id], references: [id])
+  user_id    Int      @unique
+  name       String
+  email      String
+  phone      String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model Country {
-  id       Int     @id @default(autoincrement())
-  name     String  @unique
-  states   State[]
+  id     Int     @id @default(autoincrement())
+  name   String  @unique
+  states State[]
 }
 
 model State {
-  id         Int      @id @default(autoincrement())
-  name       String
-  country    Country  @relation(fields: [countryId], references: [id])
-  countryId  Int
-  cities     City[]
+  id        Int      @id @default(autoincrement())
+  name      String
+  country   Country  @relation(fields: [countryId], references: [id])
+  countryId Int
+  cities    City[]
+  Vendor    Vendor[]
 }
 
 model City {
-  id         Int      @id @default(autoincrement())
-  name       String
-  state      State    @relation(fields: [stateId], references: [id])
-  stateId    Int
+  id      Int      @id @default(autoincrement())
+  name    String
+  state   State    @relation(fields: [stateId], references: [id])
+  stateId Int
+  Vendor  Vendor[]
 }
 
 enum UserRole {
