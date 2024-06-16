@@ -721,11 +721,11 @@ const verifyAbyAdmin = async(id) => {
 
 module.exports = {
     alreadyExist,
-    signup,
-    emailVerification,
-    signin,
-    profile,
+   /*  signup,
+    emailVerification, */
+    signin
+    /* profile,
     passwordChange,
     forgotPassword,
-    resetPassword
+    resetPassword */
 }
