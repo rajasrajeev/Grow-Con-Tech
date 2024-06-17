@@ -57,6 +57,17 @@ const loginHandler = async(req, res, next) => {
     }
 }
 
+const helloHandler = async(req, res, next) => {
+    try {
+        const data = {
+            message: "Hello World!"
+        };
+        return res.status(200).send(data);
+    } catch(err) {
+        next(err);
+    }
+}
+
 
 /* const profileHandler = async(req, res, next) => {
     try {
@@ -106,6 +117,7 @@ module.exports = {
     /* createUserHandler,
     verifyEmailHandler, */
     loginHandler,
+    helloHandler
     /* profileHandler,
     changePasswordHandler,
     forgotPasswordHandler,

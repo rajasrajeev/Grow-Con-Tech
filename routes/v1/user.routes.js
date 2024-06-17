@@ -4,6 +4,7 @@ const {
     /* createUserHandler,
     verifyEmailHandler, */
     loginHandler,
+    helloHandler
     /* profileHandler,
     changePasswordHandler,
     forgotPasswordHandler,
@@ -20,6 +21,7 @@ module.exports = (app) => {
     /* // authentication
     router.post('/signup', uploads, createUserHandler);
     router.patch('/verifyemail/:verificationCode', verifyEmailHandler); */
+    router.get('/test', helloHandler);
     router.post('/login', loginHandler);
 
    /*  // induvidual profile
