@@ -199,7 +199,7 @@ const signin = async (username, password) => {
         include: { vendor: true, contractor: true, warehouse: true, backend: true }
     });
 
-    if (!user) throw ({status: 401, message: "Invalid user credentials!"});
+    if (!user) throw ({status: 401, message: "Invalid user credentials!!"});
     if(!user.verified) throw ({status: 401, message: "Email not verified"});
 
     const isMatch = await bcrypt.compare(password, user.password);
