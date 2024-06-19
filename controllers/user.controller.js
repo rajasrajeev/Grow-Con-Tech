@@ -7,8 +7,6 @@ const {
 const { checkUserValidation } = require("../utils/user.validation");
 
 
-
-
 const loginHandler = async(req, res, next) => {
     try {
         const {username, password} = req.body;
@@ -24,16 +22,6 @@ const loginHandler = async(req, res, next) => {
     }
 }
 
-const helloHandler = async(req, res, next) => {
-    try {
-        const data = {
-            message: "Hello World!"
-        };
-        return res.status(200).send(data);
-    } catch(err) {
-        next(err);
-    }
-}
 
 const uploadFilesController = async(req, res, next) => {
     try {
@@ -49,6 +37,8 @@ const uploadFilesController = async(req, res, next) => {
         next(err);
     }
 }
+
+
 const signupController = async(req, res, next) => {
     try {
         const data = await signup(req.body);
@@ -62,6 +52,8 @@ const signupController = async(req, res, next) => {
         next(err);
     }
 }
+
+
 const doVerification = async(req, res, next) => {
     try {
         const data = await verificationUpdate(parseInt(req.params.id, 10));
@@ -71,9 +63,9 @@ const doVerification = async(req, res, next) => {
     }
 }
 
+
 module.exports = {
     loginHandler,
-    helloHandler,
     uploadFilesController,
     signupController,
     doVerification

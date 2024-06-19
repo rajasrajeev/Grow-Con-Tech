@@ -5,6 +5,7 @@ const {
 } = require("../services/product.service");
 const productSchema = require('../schemas/product.schema');
 
+
 const getProducts = async(req, res, next) => {
     try {
         const data = await getProductsForUser(req.query.role, req.query.vendor_id, req.query.category_id,req.query);
@@ -13,6 +14,8 @@ const getProducts = async(req, res, next) => {
         next(err);
     }
 }
+
+
 const createProducts = async(req, res, next) => {
     try {
         const {_, error} = productSchema.validate({
@@ -29,6 +32,7 @@ const createProducts = async(req, res, next) => {
     }
 }
 
+
 const verifyProducts = async(req, res, next) => {
     try {
         const data = await productVerification(parseInt(req.params.id, 10));
@@ -37,6 +41,7 @@ const verifyProducts = async(req, res, next) => {
         next(err);
     }
 }
+
 
 module.exports = {
     getProducts,
