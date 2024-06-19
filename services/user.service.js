@@ -33,162 +33,13 @@ const generateToken = (user) => {
     }, SECRET, {expiresIn: "7 days"});
 
     const result = {
-        role: role,
+        role: user.role,
         token: `Bearer ${token}`,
         expiresIn: 168
     } 
 
     return result;
 }
-
-/* // const getCountry = async(id) => {
-//     const country = await prisma.country.findFirst({
-//         where: {
-//             id: id
-//         }
-//     });
-//     return country;
-// }
-
-// const getState = async(id) => {
-//     const state = await prisma.state.findFirst({
-//         where: {
-//             id: id
-//         }
-//     });
-//     return state;
-// }
-
-// const getDistrict = async(id) => {
-//     const district = await prisma.district.findFirst({
-//         where: {
-//             id: id
-//         }
-//     });
-//     return district;
-// }
-
-const createProfile = async (url, payload, files, userId) => {
-    const {role} = payload;
-
-    if (role === "public") {
-        const user = await prisma.public.create({
-            data: {
-                name: payload.name,
-                address: payload.address,
-                image: (files.image) ? `${url}/${files.image[0].path}` : '',
-                user: {connect: { id: userId }},
-                country: {connect: { id: parseInt(payload.countryId) }},
-                state: {connect: { id: parseInt(payload.stateId) }},
-                district: { connect: {id: parseInt(payload.districtId) }}
-            },
-        });
-        return user;
-
-    } else if (role === "shop") {
-        const shop = await prisma.shop.create({
-            data: {
-                name: payload.name,
-                phone: payload.phone,
-                type: payload.type,
-                address: payload.address,
-                user: {connect: { id: userId }},
-                country: {connect: { id: parseInt(payload.countryId) }},
-                state: {connect: { id: parseInt(payload.stateId) }},
-                district: { connect: {id: parseInt(payload.districtId) }},
-                image: (files.image) ? `${url}/${files.image[0].path}` : '',
-            },
-        });
-        return shop;
-    } else {
-        const doctor = await prisma.doctor.create({
-            data: {
-                name: payload.name,
-                address: payload.address,
-                speciality: payload.speciality,
-                user: {connect: { id: userId }},
-                country: {connect: { id: parseInt(payload.countryId) }},
-                state: {connect: { id: parseInt(payload.stateId) }},
-                district: { connect: {id: parseInt(payload.districtId) }},
-                image: (files.image) ? `${url}/${files.image[0].path}` : '',
-            },
-        });
-        return doctor;
-    }
-}
-
-
-const signup = async (url, payload, files) => {
-    const {email, username, password, role} = payload;
-    const hashedPassword = await generatePasswordHash(password);
-    const verifyCode = crypto.randomBytes(32).toString('hex');
-    const verificationCode = crypto
-      .createHash('sha256')
-      .update(verifyCode)
-      .digest('hex');
-
-    const user = await prisma.user.create({
-        data: {
-            email: email,
-            username: username,
-            password: hashedPassword,
-            isPublic: (role === "public") ? true : false,
-            isDoctor: (role === "doctor") ? true : false,
-            isShop: (role === "shop") ? true : false,
-            verificationCode: verificationCode
-        },
-    });
-
-    if (user) {
-        const profile = await createProfile(url, payload, files, user.id);
-
-        if (profile) {
-            try {
-                user.name = profile.name;
-                const redirectUrl = `${ORIGIN_URL}/verifyemail/${verifyCode}`;
-                await new Email(user, password, redirectUrl).sendVerificationCode();
-            } catch(err) {
-                await prisma.user.update({
-                    where: {
-                        id: user.id
-                    },
-                    data: {
-                        verificationCode: null
-                    }
-                });
-                throw ({status: 403, message: err});
-            }
-        } else {
-            throw ({status: 400, message: "Can't create profile, please check provided informations"});
-        }
-    } else {
-        throw ({status: 400, message: "Can't signup, please check provided informations"});
-    }
-}
-
-
-const emailVerification = async(verifyCode) => {
-    try {
-        const verificationCode = crypto
-        .createHash('sha256')
-        .update(verifyCode)
-        .digest('hex');
-  
-      const user = await prisma.user.update({
-          where: {
-              verificationCode: verificationCode
-          },
-          data: {
-              verified: true,
-              verificationCode: null
-          }
-      });
-      return user;
-
-    } catch(err) {
-        throw ({status: 403, message: "Cannot verify email!"});
-    }
-} */
 
 
 const signin = async (username, password) => {
@@ -201,6 +52,8 @@ const signin = async (username, password) => {
 
     if (!user) throw ({status: 401, message: "Invalid user credentials!"});
     if(!user.verified) throw ({status: 401, message: "Email not verified"});
+
+    console.log(user.role);
 
     const isMatch = await bcrypt.compare(password, user.password);
 
@@ -233,499 +86,151 @@ const signin = async (username, password) => {
     } 
 }
 
+const signup = async (body) => {
+    const { password, role} = body;
+    const hashedPassword = await generatePasswordHash(password);
 
-/* const profile = async (user) => {
-    var profileDetail = {};
-
-    if(user.isAdmin) {
-        profileDetail = {
-            id: user.id,
-            email: user.email,
-            username: user.username
-        };
-    }  else {
-        profileDetail = await prisma.user.findFirst({
-            where: {
-                id: user.id
-            },
-			select: {
-				id: true,
-				email: true,
-				username: true,
-				doctor: true,
-                shop: true,
-                public: true
-			}
-        });
-    }
-    return profileDetail;
-}
-
-
-const passwordChange = async (old_password, new_password, user) => {
-    const isMatch = await bcrypt.compare(old_password, user.password);
-
-    if(isMatch) {
-        const hashedPassword = await generatePasswordHash(new_password);
-        const data = await prisma.user.update({
-            where: {
-                id: user.id
-            },
-            data: {
-                password: hashedPassword
-            }
-        });
-
-        if(!data) throw({status: 404, message: "Cannot change password"});
-        
-        return data;
-    
-    } else {
-        throw ({status: 401, message: "Incorrect password"});
-    }
-}
-
-
-const forgotPassword = async(email) => {
-    const user = await prisma.user.findFirst({
-        where: {
-            email: email
-        }
-    });
-
-    if(!user) 
-        throw ({status: 404, message: "User not found"});
-
-    if(user && !user.verified)
-        throw ({status: 401, message: "Account not verified"});
-    
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    const passwordResetToken = crypto
-      .createHash('sha256')
-      .update(resetToken)
-      .digest('hex');
-
-    await prisma.user.update({
-        where: {
-            id: user.id
-        },
+    const user = await prisma.user.create({
         data: {
-            passwordResetToken: passwordResetToken,
-            passwordResetAt: new Date(Date.now() + 10 * 60 * 1000)
-        }
-    });
-
-    try {
-        if(user.isAdmin) user.name = "Admin";
-        else if(user.isShop) user.name = user.shop.name;
-        else if(user.isPublic) user.name = user.public.name;
-        else user.name = user.doctor.name;
-
-        const url = `${ORIGIN_URL}/resetPassword/${resetToken}`;
-        await new Email(user, '', url).sendPasswordResetToken();
-    } catch(err) {
-        await prisma.user.update({
-            where: {
-                id: user.id
-            },
-            data: {
-                passwordResetToken: null, 
-                passwordResetAt: null
-            }
-        });
-        throw ({status: 403, message: "Cannot send email!"});
-    }
-
-    return user;
-}
-
-
-const resetPassword = async(resetToken, password) => {
-    const passwordResetToken = crypto
-        .createHash('sha256')
-        .update(resetToken)
-        .digest('hex');
-
-    const user = await prisma.user.findFirst({
-        where: {
-            passwordResetToken: passwordResetToken,
-            passwordResetAt: {
-                gt: new Date(),
-            }
-        }
-    });
-
-    if(!user) throw ({status: 401, message: "Invalid token or token has expired"});
-
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    const updated = await prisma.user.update({
-        where: {
-            id: user.id
-        }, 
-        data: {
+            username: body.email,
             password: hashedPassword,
-            passwordResetToken: null,
-            passwordResetAt: null
-        }
-    });
-
-    return updated;
-} */
-
-
-/* const publicProfileUpdate = async(url, user, payload, files) => {
-    const { name, address, countryId, stateId, districtId } = payload;
-    const publics = await prisma.public.findFirst({
-        where: {
-            userId: user.id
-        },
-        select: {
-            image: true
-        }
-    });
-
-    const updatedUser = await prisma.public.update({
-        where: {
-            userId: user.id
-        },
-        data: {
-            name: name,
-            address: address,
-            country: {connect: { id: parseInt(countryId) }},
-            state: {connect: { id: parseInt(stateId) }},
-            district: { connect: {id: parseInt(districtId) }},
-            image: (files.image) ? `${url}/${files.image[0].path}` : publics.image,
-        }
-    });
-
-    return updatedUser;
-}
-
-
-const doctorProfileUpdate = async(url, user, payload, files) => {
-    const { name, address, speciality, countryId, stateId, districtId } = payload;
-    const doctor = await prisma.doctor.findFirst({
-        where: {
-            userId: user.id
-        },
-        select: {
-            image: true
-        }
-    });
-
-    const updatedUser = await prisma.doctor.update({
-        where: {
-            userId: user.id
-        },
-        data: {
-            name: name,
-            address: address,
-            country: {connect: { id: parseInt(countryId) }},
-            state: {connect: { id: parseInt(stateId) }},
-            district: { connect: {id: parseInt(districtId) }},
-            speciality: speciality,
-            image: (files.image) ? `${url}/${files.image[0].path}` : doctor.image
-        }
-    });
-
-    return updatedUser;
-}
-
-
-const shopProfileUpdate = async(url, user, payload, files) => {
-    const { name, address, type, phone, countryId, stateId, districtId } = payload;
-    const shop = await prisma.shop.findFirst({
-        where: {
-            userId: user.id
-        },
-        select: {
-            image: true
-        }
-    });
-
-    const updatedUser = await prisma.shop.update({
-        where: {
-            userId: user.id
-        },
-        data: {
-            name: name,
-            address: address,
-            country: {connect: { id: parseInt(countryId) }},
-            state: {connect: { id: parseInt(stateId) }},
-            district: { connect: {id: parseInt(districtId) }},
-            type: type,
-            phone: phone,
-            image: (files.image) ? `${url}/${files.image[0].path}` : shop.image
-        }
-    });
-
-    return updatedUser;
-}
-
-
-const getUsers = async(query) => {	
-	let page = query.page;
-	let perPage = query.perPage || 1;
-	let search = query.search;
-
-	const users = await paginate(
-		prisma.user,
-		{
-			where: {
-				isPublic: true,
-				OR: [
-					{ email: { contains: search } },
-					{ username: { contains: search } },
-					{ public: {name: {contains: search}} },
-					{
-						public: {
-							country: {
-								name: {
-									contains: search
-								}
-							}
-						}
-					},
-					{
-						public: {
-							state: {
-								name: {
-									contains: search
-								}
-							}
-						}
-					},
-					{
-						public: {
-							district: {
-								name: {
-									contains: search
-								}
-							}
-						}
-					},
-				]
-			},
-			select: {
-				id: true,
-				email: true,
-				username: true,
-				public: true
-			},
-			orderBy: {
-				id: 'desc',
-		  	}
-		}, 
-		{ page: page, perPage: perPage }
-	);
-	return users;
-}
-
-
-const getDoctors = async(query) => {
-	let page = query.page;
-	let search = query.search;
-	let perPage = query.perPage || 1;
-
-	const users = await paginate(
-		prisma.user,
-		{
-			where: {
-				isDoctor: true,
-				OR: [
-					{ email: { contains: search } },
-					{ username: { contains: search } },
-					{ doctor: {name: {contains: search}} },
-					{
-						doctor: {
-							country: {
-								name: {
-									contains: search
-								}
-							}
-						}
-					},
-					{
-						doctor: {
-							state: {
-								name: {
-									contains: search
-								}
-							}
-						}
-					},
-					{
-						doctor: {
-							district: {
-								name: {
-									contains: search
-								}
-							}
-						}
-					},
-				]
-			},
-			select: {
-				id: true,
-				email: true,
-				username: true,
-				doctor: true
-			},
-			orderBy: {
-				id: 'desc',
-		  	}
-		}, 
-		{ page: page, perPage: perPage }
-	);
-	return users;
-}
-
-
-const getShops = async(query) => {
-	let page = query.page;
-	let search = query.search;
-	let perPage = query.perPage || 1;
-
-	const users = await paginate(
-		prisma.user,
-		{
-			where: {
-				isShop: true,
-				OR: [
-					{ email: { contains: search } },
-					{ username: { contains: search } },
-					{ shop: {name: {contains: search}} },
-					{
-						shop: {
-							country: {
-								name: {
-									contains: search
-								}
-							}
-						}
-					},
-					{
-						shop: {
-							state: {
-								name: {
-									contains: search
-								}
-							}
-						}
-					},
-					{
-						shop: {
-							district: {
-								name: {
-									contains: search
-								}
-							}
-						}
-					},
-				]
-			},
-			select: {
-				id: true,
-				email: true,
-				username: true,
-				shop: true
-			},
-			orderBy: {
-				id: 'desc',
-		  	}
-		}, 
-		{ page: page, perPage: perPage }
-	);
-	return users;
-}
-
-
-const deleteUser = async(id) => {
-    const user = await prisma.user.findFirst({
-        where: {
-            id: parseInt(id),
-            isAdmin: false
+            role: role,
+            last_logged_in: null,
+            verified: false
         },
     });
+    if (user) {
+        const profile = await createProfile(body, user.id);
 
-    if (!user) throw({status: 404, message: "Invalid user id"});
-
-    await prisma.user.delete({
-        where: {
-            id: user.id
+        if (profile) {
+            /* try {
+                user.name = profile.name;
+                const redirectUrl = `${ORIGIN_URL}/verifyemail/${verifyCode}`;
+                await new Email(user, password, redirectUrl).sendVerificationCode();
+            } catch(err) {
+                await prisma.user.update({
+                    where: {
+                        id: user.id
+                    },
+                    data: {
+                        verificationCode: null
+                    }
+                });
+                throw ({status: 403, message: err});
+            } */
+           return true;
+        } else {
+            throw ({status: 400, message: "Can't create profile, please check provided informations"});
         }
-    });
-
-    return true;
-}
-
-
-const userDetail = async(id) => {
-    const user = await prisma.user.findFirst({
-        where: {
-            id: parseInt(id)
-        },
-        select: {
-            id: true,
-            email: true,
-            username: true,
-            public: true,
-            doctor: true,
-            shop: true
-        }
-    });
-
-    return user;
-}
-
-
-const userUpdate = async(id, payload, files, url) => {
-    const user = await prisma.user.findFirst({
-        where: {
-            id: parseInt(id),
-            isAdmin: false
-        }
-    });
-
-    if (!user) throw({status: 404, message: "Invalid user id"});
-
-    if (user.isPublic) {
-        const updatedUser = await publicProfileUpdate(url, user, payload, files);
-        return updatedUser;
-    } else if(user.isDoctor) {
-        const updatedUser = await doctorProfileUpdate(url, user, payload, files);
-        return updatedUser;
-    } else if(user.isShop) {
-        const updatedUser = await shopProfileUpdate(url, user, payload, files);
-        return updatedUser;
     } else {
-        throw({status: 404, message: "Cannot find user"});
+        throw ({status: 400, message: "Can't signup, please check provided informations"});
     }
 }
 
+const createProfile = async (body, userId) => {
+    const {role} = body;
 
-const verifyAbyAdmin = async(id) => {
-    const verified = await prisma.user.update({
-        where: {
-            id: parseInt(id)
-        },
-        data: {
-            verified: true
-        }
-    });
+    if (role === 'VENDOR') {
+        const user = await prisma.vendor.create({
+            data: {
+                // user_id: userId,
+                company_name: body.company_name,
+                phone: body.phone,
+                email: body.email,
+                pin: body.pin,
+                address: body.address,
+                pan: body.pan,
+                gst: body.gst,
+                licence: body.licence,
+                user: {
+                    connect: { id: userId } // Connect to an existing user with ID 7
+                    // or if you need to create a new user
+                    // create: { /* user data here */ }
+                },
+                state: {
+                    connect: { id: parseInt(body.state, 10) } // Connect to an existing state with ID 1
+                    // or if you need to create a new state
+                    // create: { /* state data here */ }
+                },
+                city: {
+                    connect: { id: parseInt(body.city, 10) } // Connect to an existing city with ID 1
+                    // or if you need to create a new city
+                    // create: { /* city data here */ }
+                }
+            },
+        });
+        return user;
 
-    return verified;
-} */
+    } else if (role === 'CONTRACTOR') {
+        const contractor = await prisma.contractor.create({
+            data: {
+                user: {
+                    connect: { id: userId } // Connect to an existing user with ID 7
+                    // or if you need to create a new user
+                    // create: { /* user data here */ }
+                },
+                name: body.name,
+                company_name: body.company_name,
+                phone: body.phone,
+                email: body.email,
+                licence: body.licence
+            },
+        });
+        return contractor;
+    } else if (role === 'WAREHOUSE') {
+        const warehouse = await prisma.warehouse.create({
+            data: {
+                user: {
+                    connect: { id: userId } // Connect to an existing user with ID 7
+                    // or if you need to create a new user
+                    // create: { /* user data here */ }
+                },
+                name: body.name,
+                location: body.location,
+                incharge_name: body.incharge_name
+            },
+        });
+        return warehouse;
+    } else {
+        const backend = await prisma.backend.create({
+            data: {
+                user: {
+                    connect: { id: userId } // Connect to an existing user with ID 7
+                    // or if you need to create a new user
+                    // create: { /* user data here */ }
+                },
+                name: body.name,
+                phone: body.phone,
+                email: body.email
+            },
+        });
+        return backend;
+    }
+}
+const verificationUpdate = async (id) => {
+    try {
+  
+      const user = await prisma.user.update({
+          where: {
+              id: id
+          },
+          data: {
+              verified: true,
+              verification_code: null
+          }
+      });
+      return user;
+
+    } catch(err) {
+        console.log(err)
+        throw ({status: 403, message: "Cannot verify email!"});
+    }
+}
 
 
 module.exports = {
     alreadyExist,
-   /*  signup,
-    emailVerification, */
-    signin
-    /* profile,
-    passwordChange,
-    forgotPassword,
-    resetPassword */
+    signin,
+    signup,
+    verificationUpdate
 }

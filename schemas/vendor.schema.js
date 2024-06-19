@@ -1,6 +1,7 @@
 const Joi = require('joi');
 
 const createVendorSchema = Joi.object({
+  user_id: Joi.number().integer().required,
   company_name: Joi.string().required(),
   phone: Joi.string().required(),
   email: Joi.string().email().required(),

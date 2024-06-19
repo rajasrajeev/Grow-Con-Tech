@@ -1,45 +1,12 @@
 const { 
-    /* signup,  */
     signin,
-    alreadyExist, 
-    /* emailVerification,
-    profile,
-    passwordChange,
-    resetPassword,
-    forgotPassword */
+    alreadyExist,
+    signup,
+    verificationUpdate
 } = require("../services/user.service");
 const { checkUserValidation } = require("../utils/user.validation");
 
 
-/* const createUserHandler = async (req, res, next) => {
-    try {
-        await checkUserValidation(req, res);
-
-        const exist = await alreadyExist(req.body.email);
-        if(exist) return res.status(400).send({'message': exist});
-
-        const url = req.protocol + '://' + req.get("host");
-        await signup(url, req.body, req.files);
-
-        return res.status(201).send({
-            status: 'success',
-            message: 'An email with a verification code has been sent to your email',
-        });
-    } catch(err) {
-        next(err);
-    }
-
-}
-
-
-const verifyEmailHandler = async(req, res, next) => {
-    try {
-        await emailVerification(req.params.verificationCode);
-        return res.status(200).send({message: "Your email is verified"});
-    } catch(err) {
-        next(err);
-    }
-} */
 
 
 const loginHandler = async(req, res, next) => {
@@ -68,58 +35,46 @@ const helloHandler = async(req, res, next) => {
     }
 }
 
-
-/* const profileHandler = async(req, res, next) => {
+const uploadFilesController = async(req, res, next) => {
     try {
-        const data = await profile(req.user);
-        return res.status(200).send(data);
+        const url = req.protocol + '://' + req.get("host");
+        console.log(req.files); // Corrected to req.file
+
+        if (!req.files) {
+            return res.status(400).send({ message: "No file uploaded" });
+        }
+
+        return res.status(200).send({ "url": url + "/uploads/files/" + req.files.image[0].originalname});
+    } catch (err) {
+        next(err);
+    }
+}
+const signupController = async(req, res, next) => {
+    try {
+        const data = await signup(req.body);
+        if(data) {
+            return res.status(200).send(data);
+        } else {
+            return res.status(500).send({ message: "Signup not successfull!!!" });
+        }
+        
+    } catch (err) {
+        next(err);
+    }
+}
+const doVerification = async(req, res, next) => {
+    try {
+        const data = await verificationUpdate(parseInt(req.params.id, 10));
+        return res.status(200).send({ message : "Verification done successfully!!!"});
     } catch(err) {
         next(err);
     }
 }
-
-
-const changePasswordHandler = async (req, res, next) => {
-    try {
-        const {old_password, new_password} = req.body;
-        await passwordChange(old_password, new_password, req.user);
-        return res.status(200).send({'message': 'Password changes successfully'});
-    } catch(err) {
-        next(err);
-    } 
-}
-
-
-const forgotPasswordHandler = async (req, res, next) => {
-    try {   
-        await forgotPassword(req.body.email);
-        return res.status(200).send({
-            message: 'You will receive a reset email if user with that email exist'
-        });
-    } catch(err) {
-        next(err);
-    }
-}
-
-
-const resetPasswordHandler = async (req, res, next) => {
-    try {
-        await resetPassword(req.params.resetToken, req.body.password);
-        return res.status(200).send({
-            message: 'Password updated successfully'
-        });
-    } catch(err) {
-        next(err);
-    }
-} */
 
 module.exports = {
-    /* createUserHandler,
-    verifyEmailHandler, */
     loginHandler,
-    helloHandler
-    /* profileHandler,
-    changePasswordHandler,
-    forgotPasswordHandler,
-    resetPasswordHandler */
+    helloHandler,
+    uploadFilesController,
+    signupController,
+    doVerification
 }

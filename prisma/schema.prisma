@@ -37,12 +37,12 @@ model Vendor {
   pin          String
   state        State  @relation(fields: [stateId], references: [id])
   stateId      Int
-  district     String
   city         City   @relation(fields: [cityId], references: [id])
   cityId       Int
   pan          String
   gst          String
   licence      String
+  products     Product[]
 }
 
 model Contractor {
@@ -78,6 +78,36 @@ model Backend {
   phone      String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+}
+
+model Product {
+  id            Int       @id @default(autoincrement())
+  name          String
+  category_id   Int
+  grade_id      Int
+  quantity      Int
+  product_image String
+  base_price    Float
+  verified      Boolean   @default(false)
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  vendor_id     Int
+  category      Category  @relation(fields: [category_id], references: [id])
+  grade         Grade     @relation(fields: [grade_id], references: [id])
+  vendor        Vendor    @relation(fields: [vendor_id], references: [id])
+}
+
+model Category {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  Product Product[]
+}
+
+model Grade {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  Product Product[]
 }
 
 model Country {
