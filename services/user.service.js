@@ -8,6 +8,7 @@ const { createPaginator } = require('prisma-pagination');
 
 const paginate = createPaginator();
 
+
 const alreadyExist = async (email) => {
     const user = await prisma.user.findFirst({
         where: {
@@ -86,6 +87,7 @@ const signin = async (username, password) => {
     } 
 }
 
+
 const signup = async (body) => {
     const { password, role} = body;
     const hashedPassword = await generatePasswordHash(password);
@@ -119,13 +121,16 @@ const signup = async (body) => {
                 throw ({status: 403, message: err});
             } */
            return true;
+
         } else {
             throw ({status: 400, message: "Can't create profile, please check provided informations"});
         }
+
     } else {
         throw ({status: 400, message: "Can't signup, please check provided informations"});
     }
 }
+
 
 const createProfile = async (body, userId) => {
     const {role} = body;
@@ -177,6 +182,7 @@ const createProfile = async (body, userId) => {
             },
         });
         return contractor;
+
     } else if (role === 'WAREHOUSE') {
         const warehouse = await prisma.warehouse.create({
             data: {
@@ -191,6 +197,7 @@ const createProfile = async (body, userId) => {
             },
         });
         return warehouse;
+
     } else {
         const backend = await prisma.backend.create({
             data: {
@@ -207,9 +214,10 @@ const createProfile = async (body, userId) => {
         return backend;
     }
 }
+
+
 const verificationUpdate = async (id) => {
     try {
-  
       const user = await prisma.user.update({
           where: {
               id: id

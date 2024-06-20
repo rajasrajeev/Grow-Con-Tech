@@ -15,7 +15,6 @@ const uploads = uploadFiles.fields([{name: 'image', maxCount: 3}]);
 
 module.exports = (app) => {
 
-    router.get('/test', helloHandler);
     router.post('/login', loginHandler);
     router.post('/upload-files', uploads, uploadFilesController );
     router.post('/signup', signupController );
