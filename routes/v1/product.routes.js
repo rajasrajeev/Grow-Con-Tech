@@ -3,7 +3,8 @@ const uploadFiles = require('../../middlewares/image.middleware');
 const {
     getProducts,
     createProducts,
-    verifyProducts
+    verifyProducts,
+    deleteProduct
 } = require('../../controllers/product.controller');
 const { userAuth, checkRole } = require('../../middlewares/auth.middleware');
 
@@ -16,6 +17,7 @@ module.exports = (app) => {
     router.get('/', getProducts);
     router.post('/', createProducts);
     router.patch('/verify-product/:id', verifyProducts);
+    router.patch('/:id', deleteProduct);
 
 
     app.use('/api/v1/products', router);

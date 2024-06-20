@@ -37,9 +37,18 @@ const verifyProducts = async(req, res, next) => {
         next(err);
     }
 }
+const deleteProduct = async(req, res, next) => {
+    try {
+        const data = await deleteProduct(parseInt(req.params.id, 10));
+        return res.status(200).send({ message : "Deleted!!!"});
+    } catch(err) {
+        next(err);
+    }
+}
 
 module.exports = {
     getProducts,
     createProducts,
-    verifyProducts
+    verifyProducts,
+    deleteProduct
 }

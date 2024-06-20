@@ -74,8 +74,22 @@ const productVerification = async(id) => {
   
       } catch(err) {
           console.log(err)
-          throw ({status: 403, message: "Cannot verify email!"});
+          throw ({status: 403, message: "Cannot verify Product!"});
       }
+}
+
+const deleteProduct = async(id) => {
+  try {
+    const del = await prisma.product.delete({
+      where: {
+          id: id
+      }
+    });
+  return del;
+  } catch(err) {
+    console.log(err)
+          throw ({status: 403, message: "Sorry, Something went wrong!!!"});
+  }
 }
 
 
@@ -83,5 +97,6 @@ const productVerification = async(id) => {
 module.exports = {
     getProductsForUser,
     createProduct,
-    productVerification
+    productVerification,
+    deleteProduct
 }
