@@ -9,15 +9,23 @@ const { createPaginator } = require('prisma-pagination');
 const paginate = createPaginator();
 
 
-const alreadyExist = async (email) => {
+const alreadyExistingEmail = async (email) => {
     const user = await prisma.user.findFirst({
         where: {
             username: email
         }
     });
-    if(user) return "User with same email already exists";
+    return user ? true : false;
 }
 
+const alreadyExistingPhone = async (phone) => {
+    const user = await prisma.vendor.findFirst({
+        where: {
+            phone: phone
+        }
+    });
+    return user ? true : false;
+}
 
 const generatePasswordHash = async (password) => {
     const salt = await bcrypt.genSaltSync(12);
@@ -88,7 +96,17 @@ const signin = async (username, password) => {
 }
 
 
-const signup = async (body) => {
+const signup = async (body, files) => {
+    const emailExists = await alreadyExistingEmail(body.email);
+    if(emailExists) {
+        throw ({status: 400, message: "User with same email id already exists!"});
+    }
+
+    const phoneExists = await alreadyExistingPhone(body.phone);
+    if(phoneExists) {
+        throw ({status: 400, message: "User with same mobile number id already exists!"});
+    }
+
     const { password, role} = body;
     const hashedPassword = await generatePasswordHash(password);
 
@@ -101,26 +119,12 @@ const signup = async (body) => {
             verified: false
         },
     });
+
     if (user) {
-        const profile = await createProfile(body, user.id);
+        const profile = await createProfile(body, user.id, files);
 
         if (profile) {
-            /* try {
-                user.name = profile.name;
-                const redirectUrl = `${ORIGIN_URL}/verifyemail/${verifyCode}`;
-                await new Email(user, password, redirectUrl).sendVerificationCode();
-            } catch(err) {
-                await prisma.user.update({
-                    where: {
-                        id: user.id
-                    },
-                        verificationCode: null
-                    }
-                });
-                throw ({status: 403, message: err});
-            } */
            return true;
-
         } else {
             throw ({status: 400, message: "Can't create profile, please check provided informations"});
         }
@@ -131,9 +135,8 @@ const signup = async (body) => {
 }
 
 
-const createProfile = async (body, userId) => {
+const createProfile = async (body, userId, files) => {
     const {role} = body;
-
     if (role === 'VENDOR') {
         const user = await prisma.vendor.create({
             data: {
@@ -142,18 +145,21 @@ const createProfile = async (body, userId) => {
                 email: body.email,
                 pin: body.pin,
                 address: body.address,
-                pan: body.pan,
-                gst: body.gst,
-                licence: body.licence,
+                pan: files.pan[0].path,
+                gst: files.gst[0].path,
+                licence: files.license[0].path,
                 pan_no: body.pan_no,
                 gst_no: body.gst_no,
-                licence_no: body.licence_no,
+                licence_no: body.license_no,
                 city: body.city,
                 user: {
                     connect: { id: userId }
                 },
                 district: {
-                    connect: { id: parseInt(body.district, 10) }
+                    connect: { id: parseInt(body.districtId, 10) }
+                },
+                state: {
+                    connect: { id: parseInt(body.stateId, 10) }
                 }
             },
         });
@@ -230,8 +236,22 @@ const verificationUpdate = async (id) => {
 
 
 module.exports = {
-    alreadyExist,
     signin,
     signup,
     verificationUpdate
 }
+
+/* try {
+    user.name = profile.name;
+    const redirectUrl = `${ORIGIN_URL}/verifyemail/${verifyCode}`;
+    await new Email(user, password, redirectUrl).sendVerificationCode();
+} catch(err) {
+    await prisma.user.update({
+        where: {
+            id: user.id
+        },
+            verificationCode: null
+        }
+    });
+    throw ({status: 403, message: err});
+} */

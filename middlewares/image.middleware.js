@@ -25,8 +25,7 @@ var storage = multer.diskStorage({
         if (fileMatch.indexOf(file.mimetype) === -1) {
             return callback("Invalid file format", null);
         }
-        // Append file name with current datetime and make name unique
-        var filename = `${file.originalname}`;
+        var filename = `${Date.now()}-${file.originalname}`;
         callback(null, filename);
     }
 });

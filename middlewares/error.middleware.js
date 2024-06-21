@@ -10,7 +10,7 @@ const errorResponder = (error, request, response, next) => {
     const status = error.status || 500;
     
     if (status !== 500)
-        response.status(status).send({"message":error.message});
+        response.status(status).send({"message": error.message});
     else
         response.status(status).send({"message": "Internal server error!"});
 }

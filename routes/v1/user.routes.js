@@ -18,12 +18,10 @@ const uploadDocs = uploadFiles.fields([
     {name: 'license', maxCount: 1}]);
 
 module.exports = (app) => {
-
     router.post('/login', loginHandler);
     router.post('/upload-files', uploads, uploadFilesController );
     router.post('/signup', uploadDocs, signupController );
     router.patch('/verify/:id', doVerification)
-
 
     app.use('/api/v1/accounts', router);
 }

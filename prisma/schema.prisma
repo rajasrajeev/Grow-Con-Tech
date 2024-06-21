@@ -35,6 +35,8 @@ model Vendor {
   email        String
   address      String
   pin          String
+  state        State  @relation(fields: [stateId], references: [id])
+  stateId      Int
   district     District  @relation(fields: [districtId], references: [id])
   districtId   Int
   city         String
@@ -116,6 +118,7 @@ model State {
   id        Int     @id @default(autoincrement())
   name      String  @unique
   districts District[]
+  vendors    Vendor[]
 }
 
 model District {

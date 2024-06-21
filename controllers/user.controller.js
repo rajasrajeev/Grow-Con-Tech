@@ -1,10 +1,8 @@
 const { 
     signin,
-    alreadyExist,
     signup,
     verificationUpdate
 } = require("../services/user.service");
-const { checkUserValidation } = require("../utils/user.validation");
 
 
 const loginHandler = async(req, res, next) => {
@@ -41,13 +39,8 @@ const uploadFilesController = async(req, res, next) => {
 
 const signupController = async(req, res, next) => {
     try {
-        const data = await signup(req.body);
-        if(data) {
-            return res.status(200).send(data);
-        } else {
-            return res.status(500).send({ message: "Signup not successfull!!!" });
-        }
-        
+        const data = await signup(req.body, req.files);
+        return res.status(201).send(data);
     } catch (err) {
         next(err);
     }
