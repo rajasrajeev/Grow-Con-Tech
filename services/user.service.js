@@ -43,7 +43,7 @@ const generateToken = (user) => {
 
     const result = {
         role: user.role,
-        token: `Bearer ${token}`,
+        token: token,
         expiresIn: 168
     } 
 
@@ -59,15 +59,11 @@ const signin = async (username, password) => {
         include: { vendor: true, contractor: true, warehouse: true, backend: true }
     });
 
-    if (!user) throw ({status: 401, message: "Invalid user credentials!!"});
-    if(!user.verified) throw ({status: 401, message: "Email not verified"});
-
-    console.log(user.role);
-
+    if (!user) throw ({status: 400, message: "Invalid user credentials!!"});
+    if(!user.verified) throw ({status: 400, message: "Email not verified"});
     const isMatch = await bcrypt.compare(password, user.password);
 
     if(isMatch) {
-        let userData;
         switch (user.role) {
             case 'VENDOR':
               userData = user.vendor;
@@ -86,12 +82,12 @@ const signin = async (username, password) => {
         return {
             token: data,
             user: {
-                ...user,
-                roleData: userData
+                id: user.id,
+                username: user.username
             }
         };
     } else {
-        throw ({status: 401, message: "Invalid user credentials"});
+        throw ({status: 400, message: "Invalid user credentials"});
     } 
 }
 
