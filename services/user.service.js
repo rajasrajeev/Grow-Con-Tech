@@ -114,7 +114,6 @@ const signup = async (body) => {
                     where: {
                         id: user.id
                     },
-                    data: {
                         verificationCode: null
                     }
                 });
@@ -138,7 +137,6 @@ const createProfile = async (body, userId) => {
     if (role === 'VENDOR') {
         const user = await prisma.vendor.create({
             data: {
-                // user_id: userId,
                 company_name: body.company_name,
                 phone: body.phone,
                 email: body.email,
@@ -147,20 +145,15 @@ const createProfile = async (body, userId) => {
                 pan: body.pan,
                 gst: body.gst,
                 licence: body.licence,
+                pan_no: body.pan_no,
+                gst_no: body.gst_no,
+                licence_no: body.licence_no,
+                city: body.city,
                 user: {
-                    connect: { id: userId } // Connect to an existing user with ID 7
-                    // or if you need to create a new user
-                    // create: { /* user data here */ }
+                    connect: { id: userId }
                 },
-                state: {
-                    connect: { id: parseInt(body.state, 10) } // Connect to an existing state with ID 1
-                    // or if you need to create a new state
-                    // create: { /* state data here */ }
-                },
-                city: {
-                    connect: { id: parseInt(body.city, 10) } // Connect to an existing city with ID 1
-                    // or if you need to create a new city
-                    // create: { /* city data here */ }
+                district: {
+                    connect: { id: parseInt(body.district, 10) }
                 }
             },
         });

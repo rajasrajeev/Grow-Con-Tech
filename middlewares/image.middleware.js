@@ -2,18 +2,28 @@ const path = require('path');
 const multer = require('multer');
 
 const maxSize = 1 * 5000 * 5000;
-const imageMatch = ["image/png", "image/jpg", "image/jpeg"];
 
+const fileMatch = [
+    "image/png", 
+    "image/jpg", 
+    "image/jpeg", 
+    "application/pdf", 
+    "application/msword", 
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document", 
+    "text/csv", 
+    "application/vnd.ms-excel", 
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  ];
 
 var storage = multer.diskStorage({
     destination: (req, file, callback) => {
-        if (imageMatch.indexOf(file.mimetype) >= 0)
+        if (fileMatch.indexOf(file.mimetype) >= 0)
             callback(null, path.join(`./uploads/files/`));
     },
 
     filename: (req, file, callback) => {
-        if (imageMatch.indexOf(file.mimetype) === -1) {
-            return callback("Please use png/jpg/jpeg", null);
+        if (fileMatch.indexOf(file.mimetype) === -1) {
+            return callback("Invalid file format", null);
         }
         // Append file name with current datetime and make name unique
         var filename = `${file.originalname}`;

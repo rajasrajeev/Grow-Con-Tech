@@ -35,13 +35,15 @@ model Vendor {
   email        String
   address      String
   pin          String
-  state        State  @relation(fields: [stateId], references: [id])
-  stateId      Int
-  city         City   @relation(fields: [cityId], references: [id])
-  cityId       Int
+  district     District  @relation(fields: [districtId], references: [id])
+  districtId   Int
+  city         String
   pan          String
   gst          String
   licence      String
+  pan_no       String
+  gst_no       String
+  licence_no   String
   products     Product[]
 }
 
@@ -110,28 +112,20 @@ model Grade {
   Product Product[]
 }
 
-model Country {
-  id     Int     @id @default(autoincrement())
-  name   String  @unique
-  states State[]
+model State {
+  id        Int     @id @default(autoincrement())
+  name      String  @unique
+  districts District[]
 }
 
-model State {
+model District {
   id        Int      @id @default(autoincrement())
   name      String
-  country   Country  @relation(fields: [countryId], references: [id])
-  countryId Int
-  cities    City[]
+  state     State  @relation(fields: [stateId], references: [id])
+  stateId   Int
   Vendor    Vendor[]
 }
 
-model City {
-  id      Int      @id @default(autoincrement())
-  name    String
-  state   State    @relation(fields: [stateId], references: [id])
-  stateId Int
-  Vendor  Vendor[]
-}
 
 enum UserRole {
   VENDOR

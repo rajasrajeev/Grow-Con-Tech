@@ -38,6 +38,7 @@ app.use('/uploads', express.static('uploads'));
 //child routes
 require("./routes/v1/user.routes")(app);
 require("./routes/v1/product.routes")(app);
+require("./routes/v1/location.routes")(app);
 
 // Error handling middleware
 app.use(errorLogger);
