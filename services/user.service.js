@@ -97,17 +97,19 @@ const signin = async (username, password) => {
 
 
 const signup = async (body, files) => {
+    const { password, role} = body;
     const emailExists = await alreadyExistingEmail(body.email);
     if(emailExists) {
         throw ({status: 400, message: "User with same email id already exists!"});
     }
 
-    const phoneExists = await alreadyExistingPhone(body.phone);
-    if(phoneExists) {
-        throw ({status: 400, message: "User with same mobile number id already exists!"});
+    if (role === "VENDOR") {
+        const phoneExists = await alreadyExistingPhone(body.phone);
+        if(phoneExists) {
+            throw ({status: 400, message: "User with same mobile number id already exists!"});
+        }
     }
-
-    const { password, role} = body;
+    
     const hashedPassword = await generatePasswordHash(password);
 
     const user = await prisma.user.create({
