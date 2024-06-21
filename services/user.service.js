@@ -152,6 +152,7 @@ const createProfile = async (body, userId, files) => {
                 gst_no: body.gst_no,
                 licence_no: body.license_no,
                 city: body.city,
+                status: "Pending",
                 user: {
                     connect: { id: userId }
                 },

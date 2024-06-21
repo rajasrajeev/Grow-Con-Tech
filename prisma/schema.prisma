@@ -47,6 +47,7 @@ model Vendor {
   gst_no       String
   licence_no   String
   products     Product[]
+  status       AccountStatus
 }
 
 model Contractor {
@@ -135,4 +136,10 @@ enum UserRole {
   CONTRACTOR
   WAREHOUSE
   BACKEND
+}
+
+enum AccountStatus {
+  Approved
+  Pending
+  Rejected
 }
