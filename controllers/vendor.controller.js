@@ -15,7 +15,7 @@ const vendorListHandler = async (req, res, next) => {
 
 const vendorDetailHandler = async (req, res, next) => {
     try {
-        const data = await getVendorDetail(parseInt(req.params.id));
+        const data = await getVendorDetail(req.params.id);
         return res.status(200).send(data);
     } catch(err) {
         next(err);
@@ -25,7 +25,7 @@ const vendorDetailHandler = async (req, res, next) => {
 
 const VendorStatusHandler = async (req, res, next) => {
     try {
-        const data = await updateVendorStatus(parseInt(req.params.state_id));
+        const data = await updateVendorStatus(parseInt(req.params.id), req.body);
         return res.status(200).send(data);
     } catch(err) {
         next(err);

@@ -13,6 +13,7 @@ const getVendors = async (query) => {
 
         let whereClause = {
             OR: [
+                { vendor_id: { contains: search } },
                 { company_name: { contains: search } },
                 { email: { contains: search } },
                 { phone: { contains: search } },
@@ -30,10 +31,14 @@ const getVendors = async (query) => {
         const vendors = await paginate(prisma.vendor, {
             where: whereClause,
             select: {
+                id: true,
+                vendor_id: true,
+                requested_on: true,
                 company_name: true,
                 phone: true,
                 email: true,
-                address: true
+                address: true,
+                status: true
             },
             orderBy: {
                 id: 'desc'
@@ -55,25 +60,38 @@ const getVendorDetail = async (id) => {
     try {
         const vendor = await prisma.vendor.findFirst({
             where: {
-              id: id
+              vendor_id: id
             }
           });
         return vendor;
     } catch (err) {
         console.error(err);
-        throw ({status: 500, message: "Cannot get States"});
+        throw ({status: 500, message: "Cannot get Detail"});
     }
 }
 
 
-const updateVendorStatus = async (state_id) => {
+const updateVendorStatus = async (id, body) => {
     try {
-        const districts = await prisma.district.findMany({
+        const vendor = await prisma.vendor.update({
             where: {
-              stateId: state_id
+              id: id
+            },
+            data: {
+                status: body.status
             }
           });
-        return districts;
+        
+        await prisma.user.update({
+            where: {
+                id: vendor.user_id
+            },
+            data: {
+                verified: true
+            }
+        });
+        return vendor;
+
     } catch (err) {
         console.error(err);
         throw ({status: 500, message: "Cannot get States"});
