@@ -8,25 +8,57 @@ const getVendors = async (query) => {
     try {
         let page = query.page || 1;
         let perPage = 8;
-        let search = query.search;
+        let search = query.search || '';
+        let filter = query.filter || ''; 
 
-        const states = await paginate(prisma.vendor, {}, { page: page, perPage: perPage });
-        return states;
+        let whereClause = {
+            OR: [
+                { company_name: { contains: search } },
+                { email: { contains: search } },
+                { phone: { contains: search } },
+                { address: { contains: search } },
+            ]
+        };
+
+        if (filter) {
+            whereClause = {
+                ...whereClause,
+                AND: { status: filter }
+            };
+        }
+
+        const vendors = await paginate(prisma.vendor, {
+            where: whereClause,
+            select: {
+                company_name: true,
+                phone: true,
+                email: true,
+                address: true
+            },
+            orderBy: {
+                id: 'desc'
+            }
+        }, 
+        { page: page, perPage: perPage });
+
+        return vendors;
+
     } catch (err) {
         console.error(err);
-        throw ({status: 500, message: "Cannot get States"});
+        throw ({status: 500, message: "Cannot get Vendors"});
     }
 }
 
 
-const getVendorDetail = async (state_id) => {
+
+const getVendorDetail = async (id) => {
     try {
-        const districts = await prisma.district.findMany({
+        const vendor = await prisma.vendor.findFirst({
             where: {
-              stateId: state_id
+              id: id
             }
           });
-        return districts;
+        return vendor;
     } catch (err) {
         console.error(err);
         throw ({status: 500, message: "Cannot get States"});
