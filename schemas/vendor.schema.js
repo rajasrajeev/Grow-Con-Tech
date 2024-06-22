@@ -12,6 +12,8 @@ const createVendorSchema = Joi.object({
   pan_no: Joi.string().required(),
   gst_no: Joi.string().required(),
   licence_no: Joi.string().required(),
+  vendor_id: Joi.number().optional(),
+  requested_on: Joi.date().default(() => new Date(), 'current date')
 });
 
 module.exports = {
