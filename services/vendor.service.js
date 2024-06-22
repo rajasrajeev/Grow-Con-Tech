@@ -87,7 +87,7 @@ const updateVendorStatus = async (id, body) => {
                 id: vendor.user_id
             },
             data: {
-                verified: true
+                verified: body.status === 'Approved' ? true : false
             }
         });
         return vendor;

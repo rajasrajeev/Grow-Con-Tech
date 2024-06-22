@@ -16,9 +16,14 @@ const fileMatch = [
   ];
 
 var storage = multer.diskStorage({
+    
     destination: (req, file, callback) => {
+        let uploadPath = './uploads/files/';
+        if(file.fieldname === 'product_image') 
+            uploadPath = './uploads/products/';
+
         if (fileMatch.indexOf(file.mimetype) >= 0)
-            callback(null, path.join(`./uploads/files/`));
+            callback(null, path.join(uploadPath));
     },
 
     filename: (req, file, callback) => {
@@ -29,7 +34,6 @@ var storage = multer.diskStorage({
         callback(null, filename);
     }
 });
-
 
 let uploadFiles = multer({
     storage: storage,
