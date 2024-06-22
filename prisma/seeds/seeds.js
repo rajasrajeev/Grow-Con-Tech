@@ -3,37 +3,19 @@ const prisma = new PrismaClient();
 
 async function main() {
   // Create states
-  const state1 = await prisma.state.create({
+  /* const state1 = await prisma.state.create({
     data: {
       name: 'State 1',
       districts: {
         create: [
           {
             name: 'District 1-1',
-            /* vendors: {
-              create: [
-                { name: 'Vendor 1-1-1' },
-                { name: 'Vendor 1-1-2' }
-              ]
-            } */
           },
           {
             name: 'District 1-2',
-            /* vendors: {
-              create: [
-                { name: 'Vendor 1-2-1' },
-                { name: 'Vendor 1-2-2' }
-              ]
-            } */
           }
         ]
       },
-      /* vendors: {
-        create: [
-          { name: 'Vendor 1-1' },
-          { name: 'Vendor 1-2' }
-        ]
-      } */
     }
   });
 
@@ -44,34 +26,26 @@ async function main() {
         create: [
           {
             name: 'District 2-1',
-            /* vendors: {
-              create: [
-                { name: 'Vendor 2-1-1' },
-                { name: 'Vendor 2-1-2' }
-              ]
-            } */
           },
           {
             name: 'District 2-2',
-            /* vendors: {
-              create: [
-                { name: 'Vendor 2-2-1' },
-                { name: 'Vendor 2-2-2' }
-              ]
-            } */
           }
         ]
       },
-      /* vendors: {
-        create: [
-          { name: 'Vendor 2-1' },
-          { name: 'Vendor 2-2' }
-        ]
-      } */
+    }
+  }); */
+  const grade = await prisma.grade.create({
+    data: {
+      name: 'Grade 1',
+    }
+  });
+  const category = await prisma.category.create({
+    data: {
+      name: 'Category 1',
     }
   });
 
-  console.log({ state1, state2 });
+  console.log({ grade, category });
 }
 
 main()

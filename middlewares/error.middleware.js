@@ -1,6 +1,6 @@
 
 const errorLogger = (error, request, response, next) => {
-    console.log( `error ${error.message}`);
+    console.log( `error :::::::==> ${error}`);
     next(error);
 }
 
