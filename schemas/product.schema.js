@@ -6,8 +6,7 @@ const productSchema = Joi.object({
   grade_id: Joi.number().integer().required(),
   quantity: Joi.number().integer().min(0).required(),
   product_image: Joi.string().uri().required(),
-  base_price: Joi.number().positive().required(),
-  verified: Joi.boolean().default(false),
+  base_price: Joi.number().positive().required()
 });
 
 module.exports = productSchema;

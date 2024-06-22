@@ -3,20 +3,18 @@ const uploadFiles = require('../../middlewares/image.middleware');
 const {
     getProducts,
     createProducts,
-    verifyProducts,
     deleteProduct
 } = require('../../controllers/product.controller');
 const { userAuth, checkRole } = require('../../middlewares/auth.middleware');
 
 
 const router = express.Router();
-const uploads = uploadFiles.fields([{name: 'image', maxCount: 3}]);
+const uploads = uploadFiles.fields([{name: 'product_image', maxCount: 1}]);
 
 module.exports = (app) => {
 
     router.get('/', getProducts);
-    router.post('/', createProducts);
-    router.patch('/verify-product/:id', verifyProducts);
+    router.post('/', uploads, createProducts);
     router.delete('/:id', deleteProduct);
 
 

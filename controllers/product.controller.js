@@ -25,7 +25,7 @@ const createProducts = async(req, res, next) => {
             quantity: req.body.quantity
         });
         if(error) return res.status(400).send({'data': error});
-        const product = await createProduct(req.body);
+        const product = await createProduct(req.body, req.files);
         return res.status(201).send(product);
 
     } catch(err) {
@@ -33,15 +33,6 @@ const createProducts = async(req, res, next) => {
     }
 }
 
-
-const verifyProducts = async(req, res, next) => {
-    try {
-        const data = await productVerification(parseInt(req.params.id, 10));
-        return res.status(200).send({ message : "Verification done successfully!!!"});
-    } catch(err) {
-        next(err);
-    }
-}
 const deleteProduct = async(req, res, next) => {
     try {
         const data = await deleteProductWithId(parseInt(req.params.id, 10));
@@ -55,6 +46,5 @@ const deleteProduct = async(req, res, next) => {
 module.exports = {
     getProducts,
     createProducts,
-    verifyProducts,
     deleteProduct
 }

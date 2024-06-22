@@ -44,7 +44,7 @@ const getProductsForUser = async(role, vendor_id, category_id, page, search, per
 	return products;
 }
 
-const createProduct = async(req) => {
+const createProduct = async(req, files) => {
     const newProduct = await prisma.product.create({
         data: {
             name: req.body.name,
@@ -53,29 +53,11 @@ const createProduct = async(req) => {
             grade_id: req.body.grade_id,
             vendor_id: req.body.vendor_id,
             quantity: req.body.quantity,
-            product_image: req.body.product_image
+            product_image: files.product_image[0].path,
         }
     });
 
     return newProduct;
-}
-const productVerification = async(id) => {
-    try {
-  
-        const user = await prisma.product.update({
-            where: {
-                id: id
-            },
-            data: {
-                verified: true
-            }
-        });
-        return user;
-  
-      } catch(err) {
-          console.log(err)
-          throw ({status: 403, message: "Cannot verify Product!"});
-      }
 }
 
 const deleteProductWithId = async(id) => {
@@ -97,6 +79,5 @@ const deleteProductWithId = async(id) => {
 module.exports = {
     getProductsForUser,
     createProduct,
-    productVerification,
     deleteProductWithId
 }
