@@ -7,14 +7,9 @@ const checkRole = roles => (req, res, next) => {
     let tRole = [];
     var value = 0;
 
-    if(req.user.isUser) tRole.push("user");
-    /* else if(req.user.isAdmin) tRole.push("admin");
-    else if(req.user.isDoctor) tRole.push("doctor");
-    else if(req.user.isPublic) tRole.push("public");
-    else if(req.user.isShop) tRole.push("shop"); */
-    // else if(req.user.isAdmin && req.user.isTrainer) tRole.push("admin", "trainer");
+    if(req.user.role === 'BACKEND') tRole.push("BACKEND");
+    if(req.user.role === 'VENDOR') tRole.push("VENDOR");
 
-    
     tRole.forEach(function(word){
       value = value + roles.includes(word);
     });

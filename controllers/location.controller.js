@@ -19,7 +19,6 @@ const districtHandler = async (req, res, next) => {
 }
 
 
-
 module.exports = {
     statesHandler,
     districtHandler
