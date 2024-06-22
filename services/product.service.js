@@ -73,7 +73,7 @@ const deleteProductWithId = async(id) => {
           throw ({status: 403, message: "Sorry, Something went wrong!!!"});
   }
 }
-const getGrades = async() => {
+const getGradesList = async() => {
   try {
     const del = await prisma.grade.findAll();
   return del;
@@ -82,7 +82,7 @@ const getGrades = async() => {
           throw ({status: 403, message: "Sorry, Something went wrong!!!"});
   }
 }
-const getCategories = async() => {
+const getCategoriesList = async() => {
   try {
     const del = await prisma.category.findAll();
   return del;
@@ -98,6 +98,6 @@ module.exports = {
     getProductsForUser,
     createProduct,
     deleteProductWithId,
-    getGrades,
-    getCategories
+    getGradesList,
+    getCategoriesList
 }

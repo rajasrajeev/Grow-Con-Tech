@@ -2,8 +2,8 @@ const {
     getProductsForUser,
     createProduct,
     deleteProductWithId,
-    getGrades,
-    getCategories
+    getGradesList,
+    getCategoriesList
 } = require("../services/product.service");
 const productSchema = require('../schemas/product.schema');
 
@@ -44,7 +44,7 @@ const deleteProduct = async(req, res, next) => {
 }
 const getGrades = async(req, res, next) => {
     try {
-        const data = await getGrades();
+        const data = await getGradesList();
         return res.status(200).send({ message : "Deleted!!!"});
     } catch(err) {
         next(err);
@@ -52,7 +52,7 @@ const getGrades = async(req, res, next) => {
 }
 const getCategories = async(req, res, next) => {
     try {
-        const data = await getCategories();
+        const data = await getCategoriesList();
         return res.status(200).send({ message : "Deleted!!!"});
     } catch(err) {
         next(err);
