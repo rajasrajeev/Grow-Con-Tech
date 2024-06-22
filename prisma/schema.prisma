@@ -46,6 +46,8 @@ model Vendor {
   pan_no       String
   gst_no       String
   licence_no   String
+  vendor_id    String?
+  requested_on DateTime @default(now())
   products     Product[]
   status       AccountStatus
 }

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Vendor" ADD COLUMN     "requested_on" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN     "vendor_id" TEXT;

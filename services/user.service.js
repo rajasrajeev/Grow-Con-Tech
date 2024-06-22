@@ -151,6 +151,7 @@ const createProfile = async (body, userId, files) => {
                 licence_no: body.license_no,
                 city: body.city,
                 status: "Pending",
+                vendor_id: "VDR"+(1000+userId),
                 user: {
                     connect: { id: userId }
                 },
