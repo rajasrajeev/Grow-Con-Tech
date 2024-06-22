@@ -1,7 +1,8 @@
 const { 
     getProductsForUser,
     createProduct,
-    productVerification
+    productVerification,
+    deleteProductWithId
 } = require("../services/product.service");
 const productSchema = require('../schemas/product.schema');
 
@@ -43,7 +44,7 @@ const verifyProducts = async(req, res, next) => {
 }
 const deleteProduct = async(req, res, next) => {
     try {
-        const data = await deleteProduct(parseInt(req.params.id, 10));
+        const data = await deleteProductWithId(parseInt(req.params.id, 10));
         return res.status(200).send({ message : "Deleted!!!"});
     } catch(err) {
         next(err);

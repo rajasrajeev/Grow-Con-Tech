@@ -17,7 +17,7 @@ module.exports = (app) => {
     router.get('/', getProducts);
     router.post('/', createProducts);
     router.patch('/verify-product/:id', verifyProducts);
-    router.patch('/:id', deleteProduct);
+    router.delete('/:id', deleteProduct);
 
 
     app.use('/api/v1/products', router);

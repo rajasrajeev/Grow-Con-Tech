@@ -102,7 +102,7 @@ const signup = async (body, files) => {
     if (role === "VENDOR") {
         const phoneExists = await alreadyExistingPhone(body.phone);
         if(phoneExists) {
-            throw ({status: 400, message: "User with same mobile number id already exists!"});
+            throw ({status: 400, message: "User with same mobile number already exists!"});
         }
     }
     

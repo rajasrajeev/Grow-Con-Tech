@@ -78,7 +78,7 @@ const productVerification = async(id) => {
       }
 }
 
-const deleteProduct = async(id) => {
+const deleteProductWithId = async(id) => {
   try {
     const del = await prisma.product.delete({
       where: {
@@ -98,5 +98,5 @@ module.exports = {
     getProductsForUser,
     createProduct,
     productVerification,
-    deleteProduct
+    deleteProductWithId
 }
