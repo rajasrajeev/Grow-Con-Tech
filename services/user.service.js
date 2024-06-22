@@ -132,15 +132,6 @@ const signup = async (body, files) => {
     }
 }
 
-function generateVendorId() {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for (let i = 0; i < 7; i++) {
-      result += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return result;
-  }
-
 
 const createProfile = async (body, userId, files) => {
     const {role} = body;
@@ -160,7 +151,7 @@ const createProfile = async (body, userId, files) => {
                 licence_no: body.license_no,
                 city: body.city,
                 status: "Pending",
-                vendor_id: generateVendorId(),
+                vendor_id: "VDR"+(1000+userId),
                 user: {
                     connect: { id: userId }
                 },
