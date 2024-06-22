@@ -1,8 +1,9 @@
 const { 
     getProductsForUser,
     createProduct,
-    productVerification,
-    deleteProductWithId
+    deleteProductWithId,
+    getGrades,
+    getCategories
 } = require("../services/product.service");
 const productSchema = require('../schemas/product.schema');
 
@@ -41,10 +42,28 @@ const deleteProduct = async(req, res, next) => {
         next(err);
     }
 }
+const getGrades = async(req, res, next) => {
+    try {
+        const data = await getGrades();
+        return res.status(200).send({ message : "Deleted!!!"});
+    } catch(err) {
+        next(err);
+    }
+}
+const getCategories = async(req, res, next) => {
+    try {
+        const data = await getCategories();
+        return res.status(200).send({ message : "Deleted!!!"});
+    } catch(err) {
+        next(err);
+    }
+}
 
 
 module.exports = {
     getProducts,
     createProducts,
-    deleteProduct
+    deleteProduct,
+    getGrades,
+    getCategories
 }

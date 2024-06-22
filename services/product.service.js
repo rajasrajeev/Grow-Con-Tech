@@ -73,11 +73,31 @@ const deleteProductWithId = async(id) => {
           throw ({status: 403, message: "Sorry, Something went wrong!!!"});
   }
 }
+const getGrades = async() => {
+  try {
+    const del = await prisma.grade.findAll();
+  return del;
+  } catch(err) {
+    console.log(err)
+          throw ({status: 403, message: "Sorry, Something went wrong!!!"});
+  }
+}
+const getCategories = async() => {
+  try {
+    const del = await prisma.category.findAll();
+  return del;
+  } catch(err) {
+    console.log(err)
+          throw ({status: 403, message: "Sorry, Something went wrong!!!"});
+  }
+}
 
 
 
 module.exports = {
     getProductsForUser,
     createProduct,
-    deleteProductWithId
+    deleteProductWithId,
+    getGrades,
+    getCategories
 }
