@@ -12,20 +12,21 @@ const optns = {
 module.exports = passport => {
     passport.use(
         new Strategy(optns, async(payload, done) => {
-
-            prisma.user.findFirst({
-                where: {
-                    id: payload.user_id
-                }
-            })
-            .then(user => {
-                if (user) {
-                    return done(null, user);
-                }
-                return done(null, false);
-            }).catch(err => {
-                return done(null, false);
-            });
+            if(payload.role == "VENDOR") {
+                prisma.vendor.findFirst({
+                    where: {
+                        user_id: payload.user_id
+                    }
+                })
+                .then(user => {
+                    if (user) {
+                        return done(null, user);
+                    }
+                    return done(null, false);
+                }).catch(err => {
+                    return done(null, false);
+                });
+            }
         })
     );
 };

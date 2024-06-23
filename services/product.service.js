@@ -1,8 +1,8 @@
-const bcrypt = require('bcryptjs');
+/* const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const {SECRET, ORIGIN_URL} = require("../config/index");
-const { Email } = require('../utils/email.util');
+const { Email } = require('../utils/email.util'); */
 const { prisma } = require("../utils/prisma");
 const { createPaginator } = require('prisma-pagination');
 
@@ -45,7 +45,7 @@ const createProduct = async(req, user, files) => {
     const newProduct = await prisma.product.create({
         data: {
             name: req.name,
-            base_price: parseInt(req.base_price),
+            base_price: parseFloat(req.base_price),
             category: {
               connect: { id: parseInt(req.category_id, 10) }
             },
@@ -62,17 +62,26 @@ const createProduct = async(req, user, files) => {
 
     return newProduct;
 }
-const updateProducts = async(req, files) => {
+const updateProducts = async(id, req, files) => {
     const newProduct = await prisma.product.create({
-        data: {
-            name: req.body.name,
-            base_price: parseInt(req.body.base_price),
-            caregory_id: req.body.category_id,
-            grade_id: req.body.grade_id,
-            vendor_id: req.body.vendor_id,
-            quantity: req.body.quantity,
-            product_image: files.product_image[0].path,
-        }
+      where: {
+        id: id
+      },
+      data: {
+        name: req.name,
+        base_price: parseInt(req.base_price),
+        category: {
+          connect: { id: parseInt(req.category_id, 10) }
+        },
+        grade: {
+          connect: { id: parseInt(req.grade_id, 10) }
+        },
+        vendor: {
+          connect: { id: parseInt(user.id, 10) }
+        },
+        quantity: parseInt(req.quantity, 10),
+        product_image: files.product_image[0].path,
+    }
     });
 
     return newProduct;
@@ -117,5 +126,6 @@ module.exports = {
     createProduct,
     deleteProductWithId,
     getGradesList,
-    getCategoriesList
+    getCategoriesList,
+    updateProducts
 }

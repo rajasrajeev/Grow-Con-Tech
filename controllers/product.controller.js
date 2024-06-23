@@ -9,6 +9,7 @@ const productSchema = require('../schemas/product.schema');
 
 
 const getProductsHandler = async(req, res, next) => {
+    console.log(req.user)
     try {
         const data = await getProductsForUser(req.query.role, parseInt(req.user.id, 10), parseInt(req.query.category_id), req.query);
         return res.status(200).send(data);
@@ -40,15 +41,15 @@ const createProductsHandler = async(req, res, next) => {
 const updateProductsHandler = async(req, res, next) => {
     
     try {
-        const {_, error} = productSchema.validate({
+        /* const {_, error} = productSchema.validate({
             name: req.body.name,
             base_price: req.body.base_price,
             quantity: req.body.quantity,
             category_id: parseInt(req.body.category_id),
             grade_id: parseInt(req.body.category_id)
         });
-        if(error) return res.status(400).send({'data': error});
-        const product = await createProduct(req.body, req.files);
+        if(error) return res.status(400).send({'data': error}); */
+        const product = await createProduct(req.params.id, req.body, req.files);
         return res.status(201).send(product);
 
     } catch(err) {
