@@ -8,11 +8,46 @@ const { createPaginator } = require('prisma-pagination');
 
 const paginate = createPaginator();
 
-const getProductsForUser = async(role, vendor_id, category_id, page, search, perPage = 1) => {
-    var products = [];
-
+const getProductsForUser = async(role, user_id, category_id, query) => {
+    let products = [];
     if(role == "VENDOR") {
-        const where = {
+      try {
+        let page = query.page || 1;
+        let perPage = 8;
+        let search = query.search || '';
+
+        let whereClause = {
+            OR: [
+                { name: { contains: search } },
+                // { category: { id: {contains: category_id}}},
+                { vendor: { company_name: { contains: query.search}}}
+            ]
+        };
+
+        const products = await paginate(prisma.product, {
+            where: whereClause,
+            select: {
+                id: true,
+                category: true,
+                grade: true,
+                quantity: true,
+                product_image: true,
+                base_price: true,
+                vendor: true
+            },
+            orderBy: {
+                id: 'desc'
+            }
+        }, 
+        { page: page, perPage: perPage });
+
+        return products;
+
+    } catch (err) {
+        console.error(err);
+        throw ({status: 500, message: "Cannot get Products"});
+    }
+        /* const where = {
             AND: [
               search ? { name: { contains: search, mode: 'insensitive' } } : {},
               category_id ? { category_id: category_id } : {},
@@ -35,7 +70,7 @@ const getProductsForUser = async(role, vendor_id, category_id, page, search, per
             { page, perPage }
           );
         
-          return products;
+          return products; */
     }
     
 	return products;

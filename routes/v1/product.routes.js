@@ -18,7 +18,7 @@ module.exports = (app) => {
 
     router.get('/', userAuth, getProductsHandler);
     router.post('/', userAuth, uploads, createProductsHandler);
-    router.put('/:id', userAuth, uploads, updateProductsHandler)
+    router.patch('/:id', userAuth, uploads, updateProductsHandler)
     router.delete('/:id', userAuth, deleteProductHandler);
     router.get('/grades', userAuth, getGradesHandler);
     router.get('/categories', userAuth, getCategoriesHandler);
