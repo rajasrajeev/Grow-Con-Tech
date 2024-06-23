@@ -18,8 +18,8 @@ const getProductsForUser = async(role, vendor_id, category_id, page, search, per
         const where = {
             AND: [
               search ? { name: { contains: search, mode: 'insensitive' } } : {},
-              categoryId ? { category_id: category_id } : {},
-              vendorId ? { vendor_id: vendor_id } : {},
+              category_id ? { category_id: category_id } : {},
+              vendor_id ? { vendor_id: vendor_id } : {},
             ],
           };
         
