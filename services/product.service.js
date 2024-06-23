@@ -9,9 +9,6 @@ const { createPaginator } = require('prisma-pagination');
 const paginate = createPaginator();
 
 const getProductsForUser = async(role, vendor_id, category_id, page, search, perPage = 1) => {
-    /* const page = query.page;
-	const search = query.search;
-	const perPage = query.perPage || 1; */
     var products = [];
 
     if(role == "VENDOR") {
