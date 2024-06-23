@@ -75,7 +75,7 @@ const deleteProductWithId = async(id) => {
 }
 const getGradesList = async() => {
   try {
-    const del = await prisma.grade.findAll();
+    const del = await prisma.grade.findMany();
   return del;
   } catch(err) {
     console.log(err)
@@ -84,7 +84,7 @@ const getGradesList = async() => {
 }
 const getCategoriesList = async() => {
   try {
-    const del = await prisma.category.findAll();
+    const del = await prisma.category.findMany();
   return del;
   } catch(err) {
     console.log(err)

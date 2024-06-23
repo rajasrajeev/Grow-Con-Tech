@@ -45,7 +45,7 @@ const deleteProduct = async(req, res, next) => {
 const getGrades = async(req, res, next) => {
     try {
         const data = await getGradesList();
-        return res.status(200).send({ message : "Deleted!!!"});
+        return res.status(200).send(data);
     } catch(err) {
         next(err);
     }
@@ -53,7 +53,7 @@ const getGrades = async(req, res, next) => {
 const getCategories = async(req, res, next) => {
     try {
         const data = await getCategoriesList();
-        return res.status(200).send({ message : "Deleted!!!"});
+        return res.status(200).send(data);
     } catch(err) {
         next(err);
     }

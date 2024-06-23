@@ -15,11 +15,11 @@ const uploads = uploadFiles.fields([{name: 'product_image', maxCount: 1}]);
 
 module.exports = (app) => {
 
-    router.get('/', getProducts);
-    router.post('/', uploads, createProducts);
-    router.delete('/:id', deleteProduct);
-    router.get('/grades', getGrades);
-    router.get('/categories', getCategories);
+    router.get('/', userAuth, getProducts);
+    router.post('/', userAuth, uploads, createProducts);
+    router.delete('/:id', userAuth, deleteProduct);
+    router.get('/grades', userAuth, getGrades);
+    router.get('/categories', userAuth, getCategories);
 
 
     app.use('/api/v1/products', router);
