@@ -1,11 +1,12 @@
 const express = require('express');
 const uploadFiles = require('../../middlewares/image.middleware');
 const {
-    getProducts,
-    createProducts,
-    deleteProduct,
-    getGrades,
-    getCategories
+    getProductsHandler,
+    createProductsHandler,
+    deleteProductHandler,
+    getGradesHandler,
+    getCategoriesHandler,
+    updateProductsHandler
 } = require('../../controllers/product.controller');
 const { userAuth, checkRole } = require('../../middlewares/auth.middleware');
 
@@ -15,11 +16,12 @@ const uploads = uploadFiles.fields([{name: 'product_image', maxCount: 1}]);
 
 module.exports = (app) => {
 
-    router.get('/', userAuth, getProducts);
-    router.post('/', userAuth, uploads, createProducts);
-    router.delete('/:id', userAuth, deleteProduct);
-    router.get('/grades', userAuth, getGrades);
-    router.get('/categories', userAuth, getCategories);
+    router.get('/', userAuth, getProductsHandler);
+    router.post('/', userAuth, uploads, createProductsHandler);
+    router.patch('/:id', userAuth, uploads, updateProductsHandler)
+    router.delete('/:id', userAuth, deleteProductHandler);
+    router.get('/grades', userAuth, getGradesHandler);
+    router.get('/categories', userAuth, getCategoriesHandler);
 
 
     app.use('/api/v1/products', router);

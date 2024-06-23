@@ -44,7 +44,28 @@ const getProductsForUser = async(role, vendor_id, category_id, page, search, per
 	return products;
 }
 
-const createProduct = async(req, files) => {
+const createProduct = async(req, user, files) => {
+    const newProduct = await prisma.product.create({
+        data: {
+            name: req.name,
+            base_price: parseInt(req.base_price),
+            caregory_id: {
+              connect: { id: parseInt(req.category_id, 10) }
+            },
+            grade_id: {
+              connect: { id: parseInt(req.grade_id, 10) }
+            },
+            vendor_id: {
+              connect: { id: parseInt(user.id, 10) }
+            },
+            quantity: req.quantity,
+            product_image: files.product_image[0].path,
+        }
+    });
+
+    return newProduct;
+}
+const updateProducts = async(req, files) => {
     const newProduct = await prisma.product.create({
         data: {
             name: req.body.name,

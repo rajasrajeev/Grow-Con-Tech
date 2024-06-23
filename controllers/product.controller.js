@@ -8,7 +8,7 @@ const {
 const productSchema = require('../schemas/product.schema');
 
 
-const getProducts = async(req, res, next) => {
+const getProductsHandler = async(req, res, next) => {
     try {
         const data = await getProductsForUser(req.query.role, req.query.vendor_id, req.query.category_id,req.query);
         return res.status(200).send(data);
@@ -18,12 +18,34 @@ const getProducts = async(req, res, next) => {
 }
 
 
-const createProducts = async(req, res, next) => {
+const createProductsHandler = async(req, res, next) => {
+    console.log(req.body)
     try {
         const {_, error} = productSchema.validate({
             name: req.body.name,
             base_price: req.body.base_price,
-            quantity: req.body.quantity
+            quantity: req.body.quantity,
+            category_id: parseInt(req.body.category_id),
+            grade_id: parseInt(req.body.category_id),
+            product_image: "test"
+        });
+        if(error) return res.status(400).send({'data': error});
+        const product = await createProduct(req.body, req.user, req.files);
+        return res.status(201).send(product);
+
+    } catch(err) {
+        next(err);
+    }
+}
+const updateProductsHandler = async(req, res, next) => {
+    
+    try {
+        const {_, error} = productSchema.validate({
+            name: req.body.name,
+            base_price: req.body.base_price,
+            quantity: req.body.quantity,
+            category_id: parseInt(req.body.category_id),
+            grade_id: parseInt(req.body.category_id)
         });
         if(error) return res.status(400).send({'data': error});
         const product = await createProduct(req.body, req.files);
@@ -34,7 +56,7 @@ const createProducts = async(req, res, next) => {
     }
 }
 
-const deleteProduct = async(req, res, next) => {
+const deleteProductHandler = async(req, res, next) => {
     try {
         const data = await deleteProductWithId(parseInt(req.params.id, 10));
         return res.status(200).send({ message : "Deleted!!!"});
@@ -42,7 +64,7 @@ const deleteProduct = async(req, res, next) => {
         next(err);
     }
 }
-const getGrades = async(req, res, next) => {
+const getGradesHandler = async(req, res, next) => {
     try {
         const data = await getGradesList();
         return res.status(200).send(data);
@@ -50,7 +72,7 @@ const getGrades = async(req, res, next) => {
         next(err);
     }
 }
-const getCategories = async(req, res, next) => {
+const getCategoriesHandler = async(req, res, next) => {
     try {
         const data = await getCategoriesList();
         return res.status(200).send(data);
@@ -61,9 +83,10 @@ const getCategories = async(req, res, next) => {
 
 
 module.exports = {
-    getProducts,
-    createProducts,
-    deleteProduct,
-    getGrades,
-    getCategories
+    getProductsHandler,
+    createProductsHandler,
+    deleteProductHandler,
+    getGradesHandler,
+    getCategoriesHandler,
+    updateProductsHandler
 }
