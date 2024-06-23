@@ -63,7 +63,7 @@ const createProduct = async(req, user, files) => {
     return newProduct;
 }
 const updateProducts = async(id, req, files) => {
-    const newProduct = await prisma.product.create({
+    const newProduct = await prisma.product.update({
       where: {
         id: id
       },
