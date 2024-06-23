@@ -49,16 +49,16 @@ const createProduct = async(req, user, files) => {
         data: {
             name: req.name,
             base_price: parseInt(req.base_price),
-            caregory_id: {
+            category: {
               connect: { id: parseInt(req.category_id, 10) }
             },
-            grade_id: {
+            grade: {
               connect: { id: parseInt(req.grade_id, 10) }
             },
-            vendor_id: {
+            vendor: {
               connect: { id: parseInt(user.id, 10) }
             },
-            quantity: req.quantity,
+            quantity: parseInt(req.quantity, 10),
             product_image: files.product_image[0].path,
         }
     });
