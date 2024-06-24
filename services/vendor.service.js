@@ -98,9 +98,31 @@ const updateVendorStatus = async (id, body) => {
     }
 }
 
+const getMiniList = async (query) => {
+    try {
+        const vendors = await prisma.vendor.findMany({
+            where: {
+                company_name: {contains: query.search}
+            },
+            select: {
+                id: true,
+                vendor_id: true,
+                company_name: true
+            },
+            orderBy: {
+                company_name: 'asc'
+            }
+        });
+        return vendors;
+    } catch (err) {
+        console.log(err);
+        throw({status: 500, message: "Cannot get list"});
+    }
+}
 
 module.exports = {
     getVendors,
     getVendorDetail,
-    updateVendorStatus
+    updateVendorStatus,
+    getMiniList
 }

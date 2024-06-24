@@ -1,6 +1,8 @@
 const { getVendors, 
         getVendorDetail,
-        updateVendorStatus } = require('../services/vendor.service');
+        updateVendorStatus,
+        getMiniList
+    } = require('../services/vendor.service');
 
 
 const vendorListHandler = async (req, res, next) => {
@@ -23,9 +25,18 @@ const vendorDetailHandler = async (req, res, next) => {
 }
 
 
-const VendorStatusHandler = async (req, res, next) => {
+const vendorStatusHandler = async (req, res, next) => {
     try {
         const data = await updateVendorStatus(parseInt(req.params.id), req.body);
+        return res.status(200).send(data);
+    } catch(err) {
+        next(err);
+    }
+}
+
+const vendorMiniHandler = async (req, res, next) => {
+    try {
+        const data = await getMiniList(req.query);
         return res.status(200).send(data);
     } catch(err) {
         next(err);
@@ -36,5 +47,6 @@ const VendorStatusHandler = async (req, res, next) => {
 module.exports = {
     vendorListHandler,
     vendorDetailHandler,
-    VendorStatusHandler
+    vendorStatusHandler,
+    vendorMiniHandler
 }
