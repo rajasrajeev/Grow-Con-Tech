@@ -6,7 +6,7 @@ const { subDays, startOfDay, endOfDay } = require('date-fns');
 
 const paginate = createPaginator();
 
-const getProductsForUser = async (role, user_id, category_id, query) => {
+const getProductsForUser = async (role, user_id, query) => {
   if (role == "VENDOR") {
     try {
       let page = query.page || 1;
@@ -16,8 +16,9 @@ const getProductsForUser = async (role, user_id, category_id, query) => {
       let whereClause = {
         OR: [
           { name: { contains: search } },
-          { vendor: { company_name: { contains: search } } }
-        ]
+          { vendor: { company_name: { contains: search } } },
+        ],
+        vendor_id: user_id
       };
 
       const products = await paginate(prisma.product, {
