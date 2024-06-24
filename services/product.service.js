@@ -1,8 +1,3 @@
-/* const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
-const {SECRET, ORIGIN_URL} = require("../config/index");
-const { Email } = require('../utils/email.util'); */
 const { prisma } = require("../utils/prisma");
 const { createPaginator } = require('prisma-pagination');
 
@@ -44,37 +39,12 @@ const getProductsForUser = async(role, user_id, category_id, query) => {
 
         return products;
 
-    } catch (err) {
-        console.error(err);
-        throw ({status: 500, message: "Cannot get Products"});
-    }
-        /* const where = {
-            AND: [
-              search ? { name: { contains: search, mode: 'insensitive' } } : {},
-              category_id ? { category_id: category_id } : {},
-              vendor_id ? { vendor_id: vendor_id } : {},
-            ],
-          };
-        
-          const products = await paginate(
-            prisma.product,
-            {
-              where,
-              include: {
-                category: true,
-                grade: true,
-              },
-              orderBy: {
-                id: 'desc',
-              },
-            },
-            { page, perPage }
-          );
-        
-          return products; */
+      } catch (err) {
+          console.error(err);
+          throw ({status: 500, message: "Cannot get Products"});
+      }
     }
     
-	// return products;
 }
 
 const createProduct = async(req, user, files) => {
