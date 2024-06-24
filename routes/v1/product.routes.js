@@ -6,7 +6,8 @@ const {
     deleteProductHandler,
     getGradesHandler,
     getCategoriesHandler,
-    updateProductsHandler
+    updateProductsHandler,
+    getUnitHandler
 } = require('../../controllers/product.controller');
 const { userAuth, checkRole } = require('../../middlewares/auth.middleware');
 
@@ -22,6 +23,7 @@ module.exports = (app) => {
     router.delete('/:id', userAuth, deleteProductHandler);
     router.get('/grades', userAuth, getGradesHandler);
     router.get('/categories', userAuth, getCategoriesHandler);
+    router.get('/unit', userAuth, getUnitHandler);
 
 
     app.use('/api/v1/products', router);

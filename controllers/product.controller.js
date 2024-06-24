@@ -3,7 +3,8 @@ const {
     createProduct,
     deleteProductWithId,
     getGradesList,
-    getCategoriesList
+    getCategoriesList,
+    getUnisList
 } = require("../services/product.service");
 const productSchema = require('../schemas/product.schema');
 
@@ -37,6 +38,8 @@ const createProductsHandler = async(req, res, next) => {
         next(err);
     }
 }
+
+
 const updateProductsHandler = async(req, res, next) => {
     
     try {
@@ -64,6 +67,8 @@ const deleteProductHandler = async(req, res, next) => {
         next(err);
     }
 }
+
+
 const getGradesHandler = async(req, res, next) => {
     try {
         const data = await getGradesList();
@@ -72,9 +77,21 @@ const getGradesHandler = async(req, res, next) => {
         next(err);
     }
 }
+
+
 const getCategoriesHandler = async(req, res, next) => {
     try {
         const data = await getCategoriesList();
+        return res.status(200).send(data);
+    } catch(err) {
+        next(err);
+    }
+}
+
+
+const getUnitHandler = async(req, res, next) => {
+    try {
+        const data = await getUnisList();
         return res.status(200).send(data);
     } catch(err) {
         next(err);
@@ -88,5 +105,6 @@ module.exports = {
     deleteProductHandler,
     getGradesHandler,
     getCategoriesHandler,
-    updateProductsHandler
+    updateProductsHandler,
+    getUnitHandler
 }

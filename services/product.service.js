@@ -1,3 +1,5 @@
+const path = require('path');
+const fs = require('fs');
 const { prisma } = require("../utils/prisma");
 const { createPaginator } = require('prisma-pagination');
 
@@ -71,6 +73,8 @@ const createProduct = async(req, user, files) => {
 
     return newProduct;
 }
+
+
 const updateProducts = async(id, req, files) => {
     const newProduct = await prisma.product.update({
       where: {
@@ -100,18 +104,34 @@ const updateProducts = async(id, req, files) => {
 }
 
 const deleteProductWithId = async(id) => {
-  try {
-    const del = await prisma.product.delete({
-      where: {
-          id: id
+    try {
+      const product = await prisma.product.findUnique({
+          where: { id: id },
+          select: { product_image: true } // Assuming the field name is product_image
+      });
+
+      if (product && product.product_image) {
+          const filePath = path.join(__dirname, 'uploads/products', product.product_image);
+          fs.unlink(filePath, (err) => {
+              if (err) {
+                  console.error('Error deleting file:', err);
+              } else {
+                  console.log('File deleted successfully');
+              }
+          });
       }
-    });
-  return del;
-  } catch(err) {
-    console.log(err)
-          throw ({status: 403, message: "Sorry, Something went wrong!!!"});
+
+      const del = await prisma.product.delete({
+          where: { id: id }
+      });
+      return del;
+  } catch (err) {
+      console.log(err);
+      throw { status: 403, message: "Sorry, Something went wrong!!!" };
   }
 }
+
+
 const getGradesList = async() => {
   try {
     const del = await prisma.grade.findMany();
@@ -121,9 +141,20 @@ const getGradesList = async() => {
           throw ({status: 403, message: "Sorry, Something went wrong!!!"});
   }
 }
+
+
 const getCategoriesList = async() => {
   try {
     const del = await prisma.category.findMany();
+  return del;
+  } catch(err) {
+    console.log(err)
+          throw ({status: 403, message: "Sorry, Something went wrong!!!"});
+  }
+}
+const getUnisList = async() => {
+  try {
+    const del = await prisma.unit.findMany();
   return del;
   } catch(err) {
     console.log(err)
@@ -139,5 +170,6 @@ module.exports = {
     deleteProductWithId,
     getGradesList,
     getCategoriesList,
-    updateProducts
+    updateProducts,
+    getUnisList
 }
