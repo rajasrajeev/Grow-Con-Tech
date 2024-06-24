@@ -111,7 +111,8 @@ const deleteProductWithId = async(id) => {
       });
 
       if (product && product.product_image) {
-          const filePath = path.join(__dirname, 'uploads/products', product.product_image);
+        console.log(path.join(__dirname, '', product.product_image))
+        const filePath = path.resolve('./', product.product_image);
           fs.unlink(filePath, (err) => {
               if (err) {
                   console.error('Error deleting file:', err);
