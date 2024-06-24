@@ -34,7 +34,7 @@ async function main() {
       },
     }
   }); */
-  const grade = await prisma.grade.create({
+  /* const grade = await prisma.grade.create({
     data: {
       name: 'Grade 1',
     }
@@ -43,9 +43,14 @@ async function main() {
     data: {
       name: 'Category 1',
     }
+  }); */
+  const unit = await prisma.unit.create({
+    data: {
+      name: 'Kg',
+    }
   });
 
-  console.log({ grade, category });
+  // console.log({ grade, category });
 }
 
 main()

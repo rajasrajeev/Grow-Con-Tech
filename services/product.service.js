@@ -9,7 +9,7 @@ const { createPaginator } = require('prisma-pagination');
 const paginate = createPaginator();
 
 const getProductsForUser = async(role, user_id, category_id, query) => {
-    let products = [];
+    // let products = [];
     if(role == "VENDOR") {
       try {
         let page = query.page || 1;
@@ -20,7 +20,7 @@ const getProductsForUser = async(role, user_id, category_id, query) => {
             OR: [
                 { name: { contains: search } },
                 // { category: { id: {contains: category_id}}},
-                { vendor: { company_name: { contains: query.search}}}
+                { vendor: { company_name: { contains: search }}}
             ]
         };
 
@@ -73,7 +73,7 @@ const getProductsForUser = async(role, user_id, category_id, query) => {
           return products; */
     }
     
-	return products;
+	// return products;
 }
 
 const createProduct = async(req, user, files) => {

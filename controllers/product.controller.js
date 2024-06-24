@@ -9,9 +9,8 @@ const productSchema = require('../schemas/product.schema');
 
 
 const getProductsHandler = async(req, res, next) => {
-    console.log(req.user)
     try {
-        const data = await getProductsForUser(req.query.role, parseInt(req.user.id, 10), parseInt(req.query.category_id), req.query);
+        const data = await getProductsForUser(req.query.role, parseInt(req.user.id, 10) ?? '', parseInt(req.query.category_id) ?? '', req.query);
         return res.status(200).send(data);
     } catch(err) {
         next(err);

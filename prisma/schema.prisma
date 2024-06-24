@@ -1,5 +1,3 @@
-// schema.prisma
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -24,6 +22,7 @@ model User {
   contractor Contractor?
   warehouse  Warehouse?
   backend    Backend?
+  dailyRates DailyRate[]
 }
 
 model Vendor {
@@ -63,6 +62,7 @@ model Contractor {
   licence      String
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
+  status       AccountStatus
 }
 
 model Warehouse {
@@ -88,20 +88,22 @@ model Backend {
 }
 
 model Product {
-  id            Int       @id @default(autoincrement())
-  name          String
-  category_id   Int
-  grade_id      Int
-  quantity      Int
-  product_image String
-  base_price    Float
-  created_at    DateTime  @default(now())
-  updated_at    DateTime  @updatedAt
-
-  vendor_id     Int
-  category      Category  @relation(fields: [category_id], references: [id])
-  grade         Grade     @relation(fields: [grade_id], references: [id])
-  vendor        Vendor    @relation(fields: [vendor_id], references: [id])
+  id                Int     @id @default(autoincrement())
+  name              String
+  category_id       Int
+  grade_id          Int
+  quantity          Int
+  product_image     String
+  base_price        Float
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+  vendor_id         Int
+  category          Category  @relation(fields: [category_id], references: [id])
+  grade             Grade     @relation(fields: [grade_id], references: [id])
+  vendor            Vendor    @relation(fields: [vendor_id], references: [id])
+  unit_id           Int
+  unit              Unit      @relation(fields: [unit_id], references: [id])
+  dailyRates        DailyRate[]
 }
 
 model Category {
@@ -120,17 +122,33 @@ model State {
   id        Int     @id @default(autoincrement())
   name      String  @unique
   districts District[]
-  vendors    Vendor[]
+  vendors   Vendor[]
 }
 
 model District {
   id        Int      @id @default(autoincrement())
   name      String
-  state     State  @relation(fields: [stateId], references: [id])
+  state     State    @relation(fields: [stateId], references: [id])
   stateId   Int
   Vendor    Vendor[]
 }
 
+model Unit {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  products Product[]
+}
+
+model DailyRate {
+  id         Int      @id @default(autoincrement())
+  daily_rate Float
+  user_id    Int
+  product_id Int
+  user       User     @relation(fields: [user_id], references: [id])
+  product    Product  @relation(fields: [product_id], references: [id])
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
 
 enum UserRole {
   VENDOR
