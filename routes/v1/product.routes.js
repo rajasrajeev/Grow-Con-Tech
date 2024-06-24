@@ -7,7 +7,9 @@ const {
     getGradesHandler,
     getCategoriesHandler,
     updateProductsHandler,
-    getUnitHandler
+    getUnitHandler,
+    getDailyRatesForVendorHandler,
+    updateDailyRatesForVendorHandler
 } = require('../../controllers/product.controller');
 const { userAuth, checkRole } = require('../../middlewares/auth.middleware');
 
@@ -24,6 +26,8 @@ module.exports = (app) => {
     router.get('/grades', userAuth, getGradesHandler);
     router.get('/categories', userAuth, getCategoriesHandler);
     router.get('/unit', userAuth, getUnitHandler);
+    router.get('/daily-rates', userAuth, getDailyRatesForVendorHandler);
+    router.post('/daily-rates', userAuth, updateDailyRatesForVendorHandler)
 
 
     app.use('/api/v1/products', router);

@@ -1,10 +1,13 @@
 const { 
     getProductsForUser,
     createProduct,
+    updateProducts,
     deleteProductWithId,
     getGradesList,
     getCategoriesList,
-    getUnisList
+    getUnitList,
+    dailyRatesListForVendor,
+    updateDailyRatesForVendor
 } = require("../services/product.service");
 const productSchema = require('../schemas/product.schema');
 
@@ -51,7 +54,7 @@ const updateProductsHandler = async(req, res, next) => {
             grade_id: parseInt(req.body.category_id)
         });
         if(error) return res.status(400).send({'data': error}); */
-        const product = await createProduct(req.params.id, req.body, req.files);
+        const product = await updateProducts(req.params.id, req.user, req.body, req.files);
         return res.status(201).send(product);
 
     } catch(err) {
@@ -91,7 +94,28 @@ const getCategoriesHandler = async(req, res, next) => {
 
 const getUnitHandler = async(req, res, next) => {
     try {
-        const data = await getUnisList();
+        const data = await getUnitList();
+        return res.status(200).send(data);
+    } catch(err) {
+        next(err);
+    }
+}
+
+
+const getDailyRatesForVendorHandler = async(req, res, next) => {
+    try {
+        const data = await dailyRatesListForVendor( parseInt(req.user.id, 10) ?? '', parseInt(req.query.category_id) ?? '', req.query);
+        return res.status(200).send(data);
+    } catch(err) {
+        next(err);
+    }
+}
+
+
+const updateDailyRatesForVendorHandler = async(req, res, next) => {
+    console.log(req.body);
+    try {
+        const data = await updateDailyRatesForVendor(req.body, req.user);
         return res.status(200).send(data);
     } catch(err) {
         next(err);
@@ -106,5 +130,7 @@ module.exports = {
     getGradesHandler,
     getCategoriesHandler,
     updateProductsHandler,
-    getUnitHandler
+    getUnitHandler,
+    getDailyRatesForVendorHandler,
+    updateDailyRatesForVendorHandler
 }
