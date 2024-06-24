@@ -40,6 +40,7 @@ require("./routes/v1/user.routes")(app);
 require("./routes/v1/product.routes")(app);
 require("./routes/v1/location.routes")(app);
 require("./routes/v1/vendor.routes")(app);
+require("./routes/v1/contractor.routes")(app);
 
 // Error handling middleware
 app.use(errorLogger);

@@ -4,7 +4,7 @@ const { createPaginator } = require("prisma-pagination");
 const paginate = createPaginator();
 
 
-const getVendors = async (query) => {
+const getContractors = async (query) => {
     try {
         let page = query.page || 1;
         let perPage = 8;
@@ -13,11 +13,10 @@ const getVendors = async (query) => {
 
         let whereClause = {
             OR: [
-                { vendor_id: { contains: search } },
+                { contractor_id: { contains: search } },
                 { company_name: { contains: search } },
                 { email: { contains: search } },
-                { phone: { contains: search } },
-                { address: { contains: search } },
+                { phone: { contains: search } }
             ]
         };
 
@@ -28,16 +27,16 @@ const getVendors = async (query) => {
             };
         }
 
-        const vendors = await paginate(prisma.vendor, {
+        const contractors = await paginate(prisma.contractor, {
             where: whereClause,
             select: {
                 id: true,
-                vendor_id: true,
-                requested_on: true,
+                contractor_id: true,
+                created_at: true,
                 company_name: true,
+                name: true,
                 phone: true,
                 email: true,
-                address: true,
                 status: true
             },
             orderBy: {
@@ -46,24 +45,23 @@ const getVendors = async (query) => {
         }, 
         { page: page, perPage: perPage });
 
-        return vendors;
+        return contractors;
 
     } catch (err) {
         console.error(err);
-        throw ({status: 500, message: "Cannot get Vendors"});
+        throw ({status: 500, message: "Cannot get Contractors"});
     }
 }
 
 
-
-const getVendorDetail = async (id) => {
+const getContractorDetail = async (id) => {
     try {
-        const vendor = await prisma.vendor.findFirst({
+        const contractor = await prisma.contractor.findFirst({
             where: {
-              vendor_id: id
+              contractor_id: id
             }
           });
-        return vendor;
+        return contractor;
     } catch (err) {
         console.error(err);
         throw ({status: 500, message: "Cannot get Detail"});
@@ -71,9 +69,9 @@ const getVendorDetail = async (id) => {
 }
 
 
-const updateVendorStatus = async (id, body) => {
+const updateContractorStatus = async (id, body) => {
     try {
-        const vendor = await prisma.vendor.update({
+        const contractor = await prisma.contractor.update({
             where: {
               id: id
             },
@@ -84,45 +82,23 @@ const updateVendorStatus = async (id, body) => {
         
         await prisma.user.update({
             where: {
-                id: vendor.user_id
+                id: contractor.user_id
             },
             data: {
                 verified: body.status === 'Approved' ? true : false
             }
         });
-        return vendor;
+        return contractor;
 
     } catch (err) {
         console.error(err);
-        throw ({status: 500, message: "Cannot update Status"});
+        throw ({status: 500, message: "Cannot update status"});
     }
 }
 
-const getMiniList = async (query) => {
-    try {
-        const vendors = await prisma.vendor.findMany({
-            where: {
-                company_name: {contains: query.search}
-            },
-            select: {
-                id: true,
-                vendor_id: true,
-                company_name: true
-            },
-            orderBy: {
-                company_name: 'asc'
-            }
-        });
-        return vendors;
-    } catch (err) {
-        console.log(err);
-        throw({status: 500, message: "Cannot get list"});
-    }
-}
 
 module.exports = {
-    getVendors,
-    getVendorDetail,
-    updateVendorStatus,
-    getMiniList
+    getContractors,
+    getContractorDetail,
+    updateContractorStatus
 }

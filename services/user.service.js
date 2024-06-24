@@ -18,13 +18,22 @@ const alreadyExistingEmail = async (email) => {
     return user ? true : false;
 }
 
-const alreadyExistingPhone = async (phone) => {
-    const user = await prisma.vendor.findFirst({
-        where: {
-            phone: phone
-        }
-    });
-    return user ? true : false;
+const alreadyExistingPhone = async (phone, role) => {
+    if(role === 'VENDOR') {
+        const user = await prisma.vendor.findFirst({
+            where: {
+                phone: phone
+            }
+        });
+        return user ? true : false;
+    } else if(role === 'CONTRACTOR') {
+        const user = await prisma.contractor.findFirst({
+            where: {
+                phone: phone
+            }
+        });
+        return user ? true : false;
+    }
 }
 
 const generatePasswordHash = async (password) => {
@@ -94,16 +103,15 @@ const signin = async (username, password) => {
 
 const signup = async (body, files) => {
     const { password, role} = body;
+
     const emailExists = await alreadyExistingEmail(body.email);
     if(emailExists) {
         throw ({status: 400, message: "User with same email id already exists!"});
     }
 
-    if (role === "VENDOR") {
-        const phoneExists = await alreadyExistingPhone(body.phone);
-        if(phoneExists) {
-            throw ({status: 400, message: "User with same mobile number already exists!"});
-        }
+    const phoneExists = await alreadyExistingPhone(body.phone, role);
+    if(phoneExists) {
+        throw ({status: 400, message: "User with same mobile number already exists!"});
     }
     
     const hashedPassword = await generatePasswordHash(password);
@@ -122,7 +130,11 @@ const signup = async (body, files) => {
         const profile = await createProfile(body, user.id, files);
 
         if (profile) {
-           return true;
+           return {
+            'name': profile.name,
+            'username': profile.email,
+            'id': profile.id
+           };
         } else {
             throw ({status: 400, message: "Can't create profile, please check provided informations"});
         }
@@ -169,15 +181,17 @@ const createProfile = async (body, userId, files) => {
         const contractor = await prisma.contractor.create({
             data: {
                 user: {
-                    connect: { id: userId } // Connect to an existing user with ID 7
-                    // or if you need to create a new user
-                    // create: { /* user data here */ }
+                    connect: { id: userId }
                 },
                 name: body.name,
                 company_name: body.company_name,
+                status: "Pending",
                 phone: body.phone,
                 email: body.email,
-                licence: body.licence
+                licence: files.license[0].path,
+                contractor_id: "CTR"+(1000+userId),
+                license_no: body.license_no,
+
             },
         });
         return contractor;
