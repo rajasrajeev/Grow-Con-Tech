@@ -9,12 +9,12 @@ const {
     dailyRatesListForVendor,
     updateDailyRatesForVendor
 } = require("../services/product.service");
-const productSchema = require('../schemas/product.schema');
+// const productSchema = require('../schemas/product.schema');
 
 
 const getProductsHandler = async(req, res, next) => {
     try {
-        const data = await getProductsForUser(req.user.role, parseInt(req.user.id, 10) ?? '', req.query);
+        const data = await getProductsForUser(req.user.role, parseInt(req.user.id, 10), req.query);
         return res.status(200).send(data);
     } catch(err) {
         next(err);
@@ -25,15 +25,6 @@ const getProductsHandler = async(req, res, next) => {
 const createProductsHandler = async(req, res, next) => {
     console.log(req.body)
     try {
-        /* const {_, error} = productSchema.validate({
-            name: req.body.name,
-            base_price: req.body.base_price,
-            quantity: req.body.quantity,
-            category_id: parseInt(req.body.category_id),
-            grade_id: parseInt(req.body.category_id),
-            product_image: req.files[0]
-        });
-        if(error) return res.status(400).send({'data': error}); */
         const product = await createProduct(req.body, req.user, req.files);
         return res.status(201).send(product);
 
@@ -46,14 +37,6 @@ const createProductsHandler = async(req, res, next) => {
 const updateProductsHandler = async(req, res, next) => {
     
     try {
-        /* const {_, error} = productSchema.validate({
-            name: req.body.name,
-            base_price: req.body.base_price,
-            quantity: req.body.quantity,
-            category_id: parseInt(req.body.category_id),
-            grade_id: parseInt(req.body.category_id)
-        });
-        if(error) return res.status(400).send({'data': error}); */
         const product = await updateProducts(req.params.id, req.user, req.body, req.files);
         return res.status(201).send(product);
 
