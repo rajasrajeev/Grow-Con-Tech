@@ -190,6 +190,7 @@ const createProfile = async (body, userId, files) => {
                 email: body.email,
                 licence: files.license[0].path,
                 contractor_id: "CTR"+(1000+userId),
+                license_no: body.license_no,
 
             },
         });

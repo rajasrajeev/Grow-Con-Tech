@@ -58,7 +58,7 @@ const getContractorDetail = async (id) => {
     try {
         const contractor = await prisma.contractor.findFirst({
             where: {
-              contractor: id
+              contractor_id: id
             }
           });
         return contractor;
@@ -88,7 +88,7 @@ const updateContractorStatus = async (id, body) => {
                 verified: body.status === 'Approved' ? true : false
             }
         });
-        return vendor;
+        return contractor;
 
     } catch (err) {
         console.error(err);
