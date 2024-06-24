@@ -27,6 +27,7 @@ const getProductsForUser = async (role, user_id, query) => {
           id: true,
           category: true,
           grade: true,
+          name: true,
           quantity: true,
           product_image: true,
           base_price: true,
