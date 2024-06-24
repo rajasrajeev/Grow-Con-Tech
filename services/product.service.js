@@ -33,7 +33,8 @@ const getProductsForUser = async(role, user_id, category_id, query) => {
                 quantity: true,
                 product_image: true,
                 base_price: true,
-                vendor: true
+                vendor: true,
+                unit: true
             },
             orderBy: {
                 id: 'desc'
@@ -90,6 +91,9 @@ const createProduct = async(req, user, files) => {
             vendor: {
               connect: { id: parseInt(user.id, 10) }
             },
+            unit: {
+              connect: { id: parseInt(req.unit_id, 10) }
+            },
             quantity: parseInt(req.quantity, 10),
             product_image: files.product_image[0].path,
         }
@@ -113,6 +117,9 @@ const updateProducts = async(id, req, files) => {
         },
         vendor: {
           connect: { id: parseInt(user.id, 10) }
+        },
+        unit: {
+          connect: { id: parseInt(req.unit_id, 10) }
         },
         quantity: parseInt(req.quantity, 10),
         product_image: files.product_image[0].path,
