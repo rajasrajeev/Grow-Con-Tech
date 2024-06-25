@@ -8,7 +8,8 @@ const {
     getUnitList,
     dailyRatesListForVendor,
     updateDailyRatesForVendor,
-    productDetail
+    productDetail,
+    getProductMiniForVendor
 } = require("../services/product.service");
 const productSchema = require('../schemas/product.schema');
 
@@ -95,7 +96,7 @@ const getUnitHandler = async(req, res, next) => {
 
 const getDailyRatesForVendorHandler = async(req, res, next) => {
     try {
-        const data = await dailyRatesListForVendor( parseInt(req.user.id, 10) ?? '', parseInt(req.query.category_id) ?? '', req.query);
+        const data = await dailyRatesListForVendor( parseInt(req.user.id, 10) || '', parseInt(req.query.category_id) || '', req.query);
         return res.status(200).send(data);
     } catch(err) {
         next(err);
@@ -112,6 +113,15 @@ const updateDailyRatesForVendorHandler = async(req, res, next) => {
     }
 }
 
+const getFilterListHandler = async (req, res, next) => {
+    try {
+        const data = await getProductMiniForVendor(req.user);
+        return res.status(200).send(data);
+    } catch (err) {
+        next(err);
+    }
+}
+
 
 module.exports = {
     getProductsHandler,
@@ -123,5 +133,6 @@ module.exports = {
     getUnitHandler,
     getDailyRatesForVendorHandler,
     updateDailyRatesForVendorHandler,
-    productDetailHandler
+    productDetailHandler,
+    getFilterListHandler
 }

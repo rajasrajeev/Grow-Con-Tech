@@ -391,6 +391,7 @@ const dailyRatesListForVendor = async (user_id, category_id, query) => {
   }
 };
 
+
 const productDetail = async(user, id, role) => {
   let selectClause = {
     id: true,
@@ -440,6 +441,24 @@ const productDetail = async(user, id, role) => {
   }
 }
 
+
+const getProductMiniForVendor = async (user) => {
+  try {
+    const data = await prisma.product.findMany({
+      where: {
+        vendor_id: user.id
+      },
+      select: {
+        id: true,
+        name: true
+      }
+    });
+    return data;
+  } catch (err) {
+    throw ({ status: 500, message: "Sorry, Something went wrong!!!" });
+  }
+}
+
 module.exports = {
   getProductsForUser,
   createProduct,
@@ -451,5 +470,6 @@ module.exports = {
   getUnitList,
   dailyRatesListForVendor,
   updateDailyRatesForVendor,
-  productDetail
+  productDetail,
+  getProductMiniForVendor
 }

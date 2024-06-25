@@ -10,7 +10,8 @@ const {
     getUnitHandler,
     getDailyRatesForVendorHandler,
     updateDailyRatesForVendorHandler,
-    productDetailHandler
+    productDetailHandler,
+    getFilterListHandler
 } = require('../../controllers/product.controller');
 const { userAuth, checkRole } = require('../../middlewares/auth.middleware');
 
@@ -19,6 +20,7 @@ const router = express.Router();
 const uploads = uploadFiles.fields([{name: 'product_image', maxCount: 1}]);
 
 module.exports = (app) => {
+    router.get('/product-mini/', userAuth, getFilterListHandler);
     router.get('/grades', userAuth, getGradesHandler);
     router.get('/categories', userAuth, getCategoriesHandler);
     router.get('/unit', userAuth, getUnitHandler);
