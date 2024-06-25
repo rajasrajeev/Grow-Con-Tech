@@ -13,7 +13,7 @@ const {
     productDetailHandler,
     getFilterListHandler
 } = require('../../controllers/product.controller');
-const { userAuth, checkRole } = require('../../middlewares/auth.middleware');
+const { userAuth } = require('../../middlewares/auth.middleware');
 
 
 const router = express.Router();
