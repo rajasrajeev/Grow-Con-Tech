@@ -24,9 +24,6 @@ const getProductsHandler = async(req, res, next) => {
 
 const productDetailHandler = async(req, res, next) => {
     try {
-        console.log("*************************************************")
-        console.log(req.user, req.params.id, req.query.role);
-        console.log("*************************************************")
         const product = await productDetail(req.user, req.params.id, req.query.role);
         return res.status(200).send(product);
     } catch (err) {

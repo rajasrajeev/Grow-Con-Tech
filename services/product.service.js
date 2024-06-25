@@ -58,28 +58,58 @@ const getProductsForUser = async (role, user_id, query) => {
 }
 
 const createProduct = async (req, user, files) => {
-  const newProduct = await prisma.product.create({
-    data: {
-      name: req.name,
-      base_price: parseFloat(req.base_price),
-      category: {
-        connect: { id: parseInt(req.category_id, 10) }
+  try {
+    const newProduct = await prisma.product.create({
+      data: {
+        name: req.name,
+        base_price: parseFloat(req.base_price),
+        category: {
+          connect: { id: parseInt(req.category_id, 10) }
+        },
+        grade: {
+          connect: { id: parseInt(req.grade_id, 10) }
+        },
+        vendor: {
+          connect: { id: parseInt(user.id, 10) }
+        },
+        unit: {
+          connect: { id: parseInt(req.unit_id, 10) }
+        },
+        quantity: parseInt(req.quantity, 10),
+        product_image: files.product_image[0].path,
+      }
+    });
+  
+    const product = await prisma.product.findFirst({
+      where: {
+        id: newProduct.id
       },
-      grade: {
-        connect: { id: parseInt(req.grade_id, 10) }
-      },
-      vendor: {
-        connect: { id: parseInt(user.id, 10) }
-      },
-      unit: {
-        connect: { id: parseInt(req.unit_id, 10) }
-      },
-      quantity: parseInt(req.quantity, 10),
-      product_image: files.product_image[0].path,
-    }
-  });
-
-  return newProduct;
+      select: {
+        id: true,
+        category: true,
+        grade: true,
+        name: true,
+        quantity: true,
+        product_image: true,
+        base_price: true,
+        vendor: {
+          select: {
+            id: true,
+            vendor_id: true,
+            company_name: true
+          }
+        },
+        unit: true,
+        dailyRates: true
+      }
+    });
+  
+    return product;
+  } catch (err) {
+    console.log(err);
+    throw({status: 500, message: "Something went wrong"})
+  }
+  
 }
 
 
@@ -92,7 +122,7 @@ const updateProducts = async (id, user, req, files) => {
     }
 
     if (req.base_price) {
-      data.base_price = parseInt(req.base_price);
+      data.base_price = parseFloat(req.base_price);
     }
 
     if (req.category_id) {
