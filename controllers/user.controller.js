@@ -24,8 +24,6 @@ const loginHandler = async(req, res, next) => {
 const uploadFilesController = async(req, res, next) => {
     try {
         const url = req.protocol + '://' + req.get("host");
-        console.log(req.files); // Corrected to req.file
-
         if (!req.files) {
             return res.status(400).send({ message: "No file uploaded" });
         }

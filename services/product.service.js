@@ -49,9 +49,10 @@ const getProductsForUser = async (role, user_id, query) => {
       return products;
 
     } catch (err) {
-      console.error(err);
       throw ({ status: 500, message: "Cannot get Products" });
     }
+  } else {
+    throw ({ status: 500, message: "Not implemented yet" });
   }
 
 }
@@ -175,7 +176,6 @@ const deleteProductWithId = async (id) => {
     });
     return del;
   } catch (err) {
-    console.log(err);
     throw { status: 403, message: "Sorry, Something went wrong!!!" };
   }
 }
@@ -183,10 +183,9 @@ const deleteProductWithId = async (id) => {
 
 const getGradesList = async () => {
   try {
-    const del = await prisma.grade.findMany();
-    return del;
+    const grades = await prisma.grade.findMany();
+    return grades;
   } catch (err) {
-    console.log(err)
     throw ({ status: 403, message: "Sorry, Something went wrong!!!" });
   }
 }
@@ -194,20 +193,18 @@ const getGradesList = async () => {
 
 const getCategoriesList = async () => {
   try {
-    const del = await prisma.category.findMany();
-    return del;
+    const data = await prisma.category.findMany();
+    return data;
   } catch (err) {
-    console.log(err)
     throw ({ status: 403, message: "Sorry, Something went wrong!!!" });
   }
 }
 
 const getUnitList = async () => {
   try {
-    const del = await prisma.unit.findMany();
-    return del;
+    const data = await prisma.unit.findMany();
+    return data;
   } catch (err) {
-    console.log(err)
     throw ({ status: 403, message: "Sorry, Something went wrong!!!" });
   }
 }
@@ -364,7 +361,54 @@ const dailyRatesListForVendor = async (user_id, category_id, query) => {
   }
 };
 
+const productDetail = async(user, id, role) => {
+  let selectClause = {
+    id: true,
+    category: true,
+    grade: true,
+    name: true,
+    quantity: true,
+    product_image: true,
+    base_price: true,
+    vendor: {
+      select: {
+        id: true,
+        vendor_id: true,
+        company_name: true
+      }
+    },
+    unit: true,
+    dailyRates: true
+  };
 
+  if(role === 'BACKEND') {
+    try {
+      const product = await prisma.product.findFirst({
+        where: { id: parseInt(id) },
+        select: selectClause,
+      });
+      return product;
+
+    } catch (err) {
+      throw ({ status: 500, message: "Sorry, Something went wrong!!!" });
+    }
+   
+  } else {
+    try {
+      const product = await prisma.product.findFirst({
+        where: {
+          id: parseInt(id),
+          vendor_id: user.id
+        },
+        select: selectClause
+      });
+      return product;
+
+    } catch (err) {
+      throw ({ status: 500, message: "Sorry, Something went wrong!!!" });
+    }
+  }
+}
 
 module.exports = {
   getProductsForUser,
@@ -376,5 +420,6 @@ module.exports = {
   updateProducts,
   getUnitList,
   dailyRatesListForVendor,
-  updateDailyRatesForVendor
+  updateDailyRatesForVendor,
+  productDetail
 }

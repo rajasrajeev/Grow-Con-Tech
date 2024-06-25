@@ -243,7 +243,6 @@ const verificationUpdate = async (id) => {
       return user;
 
     } catch(err) {
-        console.log(err)
         throw ({status: 403, message: "Cannot verify email!"});
     }
 }

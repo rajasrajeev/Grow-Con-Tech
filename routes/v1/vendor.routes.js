@@ -11,9 +11,10 @@ const router = express.Router();
 
 
 module.exports = (app) => {
+    router.get('/vendor-min', userAuth, vendorMiniHandler);
     router.get('/:id', userAuth, checkRole(['BACKEND']), vendorDetailHandler);
     router.patch('/:id', userAuth, checkRole(['BACKEND']), vendorStatusHandler);
     router.get('/', userAuth, checkRole(['BACKEND']), vendorListHandler);
-    router.get('/vendor-min', userAuth, vendorMiniHandler);
+    
     app.use('/api/v1/vendors', router);
 }
