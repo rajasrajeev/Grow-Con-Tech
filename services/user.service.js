@@ -72,6 +72,7 @@ const signin = async (username, password) => {
     if(!user.verified) throw ({status: 400, message: "Email not verified"});
     const isMatch = await bcrypt.compare(password, user.password);
 
+    let userData = {};
     if(isMatch) {
         switch (user.role) {
             case 'VENDOR':
@@ -93,7 +94,8 @@ const signin = async (username, password) => {
             user: {
                 id: user.id,
                 username: user.username
-            }
+            },
+            data: userData
         };
     } else {
         throw ({status: 400, message: "Invalid user credentials"});
