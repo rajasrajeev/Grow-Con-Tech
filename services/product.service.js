@@ -30,7 +30,6 @@ const getProductsForUser = async (role, user_id, query) => {
           name: true,
           quantity: true,
           product_image: true,
-          base_price: true,
           vendor: {
             select: {
               id: true,
@@ -38,7 +37,13 @@ const getProductsForUser = async (role, user_id, query) => {
               company_name: true
             }
           },
-          unit: true
+          unit: true,
+          dailyRates: {
+            orderBy: {
+              created_at: 'desc'
+            },
+            take: 1
+          }
         },
         orderBy: {
           id: 'desc'
@@ -54,15 +59,14 @@ const getProductsForUser = async (role, user_id, query) => {
   } else {
     throw ({ status: 500, message: "Not implemented yet" });
   }
+};
 
-}
 
 const createProduct = async (req, user, files) => {
   try {
     const newProduct = await prisma.product.create({
       data: {
         name: req.name,
-        base_price: parseFloat(req.base_price),
         category: {
           connect: { id: parseInt(req.category_id, 10) }
         },
@@ -70,7 +74,7 @@ const createProduct = async (req, user, files) => {
           connect: { id: parseInt(req.grade_id, 10) }
         },
         vendor: {
-          connect: { id: parseInt(user.id, 10) }
+          connect: { id: parseInt(user.vendor.id, 10) }
         },
         unit: {
           connect: { id: parseInt(req.unit_id, 10) }
@@ -79,7 +83,19 @@ const createProduct = async (req, user, files) => {
         product_image: files.product_image[0].path,
       }
     });
-  
+
+    await prisma.dailyRate.create({
+      data: {
+        daily_rate: parseFloat(req.base_price),
+        user: {
+          connect: { id: parseInt(user.vendor.id, 10) }
+        },
+        product: {
+          connect: { id: newProduct.id }
+        }
+      }
+    });
+
     const product = await prisma.product.findFirst({
       where: {
         id: newProduct.id
@@ -91,7 +107,6 @@ const createProduct = async (req, user, files) => {
         name: true,
         quantity: true,
         product_image: true,
-        base_price: true,
         vendor: {
           select: {
             id: true,
@@ -103,15 +118,13 @@ const createProduct = async (req, user, files) => {
         dailyRates: true
       }
     });
-  
+
     return product;
   } catch (err) {
     console.log(err);
-    throw({status: 500, message: "Something went wrong"})
+    throw({ status: 500, message: "Something went wrong" });
   }
-  
-}
-
+};
 
 const updateProducts = async (id, user, req, files) => {
   try {
@@ -119,10 +132,6 @@ const updateProducts = async (id, user, req, files) => {
 
     if (req.name) {
       data.name = req.name;
-    }
-
-    if (req.base_price) {
-      data.base_price = parseFloat(req.base_price);
     }
 
     if (req.category_id) {
@@ -138,7 +147,7 @@ const updateProducts = async (id, user, req, files) => {
     }
 
     data.vendor = {
-      connect: { id: parseInt(user.id, 10) }
+      connect: { id: parseInt(user.vendor.id, 10) }
     };
 
     if (req.unit_id) {
@@ -155,7 +164,11 @@ const updateProducts = async (id, user, req, files) => {
       where: {
         id: parseInt(id)
       }
-    })
+    });
+
+    if (!product) {
+      throw { status: 404, message: "Product not found" };
+    }
 
     if (files && files.product_image && files.product_image.length > 0) {
       const filePath = path.resolve('./', product.product_image);
@@ -176,12 +189,53 @@ const updateProducts = async (id, user, req, files) => {
       data: data
     });
 
+    const today = new Date();
+    const startOfToday = startOfDay(today);
+    const endOfToday = endOfDay(today);
+
+    const existingRate = await prisma.dailyRate.findFirst({
+      where: {
+        product_id: parseInt(id, 10),
+        user_id: parseInt(user.vendor.id, 10),
+        created_at: {
+          gte: startOfToday,
+          lte: endOfToday
+        }
+      }
+    });
+
+    if (existingRate) {
+      await prisma.dailyRate.update({
+        where: { id: existingRate.id },
+        data: {
+          daily_rate: parseFloat(req.daily_rate)
+        }
+      });
+    } else {
+      await prisma.dailyRate.create({
+        data: {
+          daily_rate: parseFloat(req.daily_rate),
+          user: {
+            connect: { id: parseInt(user.vendor.id, 10) }
+          },
+          product: {
+            connect: { id: parseInt(id, 10) }
+          }
+        }
+      });
+    }
+
     return newProduct;
   } catch (err) {
     console.error(err);
-    throw ({ status: 500, message: "Sorry, something went wrong!" });
+    if (!err.status) {
+      err.status = 500;
+      err.message = "Sorry, something went wrong!";
+    }
+    throw err;
   }
 };
+
 
 const deleteProductWithId = async (id) => {
   try {
@@ -201,15 +255,20 @@ const deleteProductWithId = async (id) => {
       });
     }
 
+    // Delete entries from DailyRate table associated with the product
+    await prisma.dailyRate.deleteMany({
+      where: { product_id: id }
+    });
+
     const del = await prisma.product.delete({
       where: { id: id }
     });
     return del;
   } catch (err) {
+    console.error(err);
     throw { status: 403, message: "Sorry, Something went wrong!!!" };
   }
-}
-
+};
 
 const getGradesList = async () => {
   try {
@@ -218,8 +277,7 @@ const getGradesList = async () => {
   } catch (err) {
     throw ({ status: 403, message: "Sorry, Something went wrong!!!" });
   }
-}
-
+};
 
 const getCategoriesList = async () => {
   try {
@@ -228,7 +286,7 @@ const getCategoriesList = async () => {
   } catch (err) {
     throw ({ status: 403, message: "Sorry, Something went wrong!!!" });
   }
-}
+};
 
 const getUnitList = async () => {
   try {
@@ -237,7 +295,7 @@ const getUnitList = async () => {
   } catch (err) {
     throw ({ status: 403, message: "Sorry, Something went wrong!!!" });
   }
-}
+};
 
 const updateDailyRatesForVendor = async (body, user) => {
   try {
@@ -248,7 +306,7 @@ const updateDailyRatesForVendor = async (body, user) => {
     const existingRate = await prisma.dailyRate.findFirst({
       where: {
         product_id: parseInt(body.product_id, 10),
-        user_id: parseInt(user.user_id, 10),
+        user_id: parseInt(user.vendor.id, 10),
         created_at: {
           gte: startOfToday,
           lte: endOfToday
@@ -259,26 +317,20 @@ const updateDailyRatesForVendor = async (body, user) => {
     let response;
 
     if (existingRate) {
-      /* response = await prisma.dailyRate.update({
-        where: { id: existingRate.id },
-        data: {
-          daily_rate: parseFloat(body.daily_rate)
-        }
-      }); */
-      return { message: "Sorry, todays rate is already updated", success: false };
+      return { message: "Sorry, today's rate is already updated", success: false };
     } else {
       response = await prisma.dailyRate.create({
         data: {
           daily_rate: parseFloat(body.daily_rate),
           user: {
-            connect: { id: parseInt(user.user_id, 10) }
+            connect: { id: parseInt(user.vendor.id, 10) }
           },
           product: {
             connect: { id: parseInt(body.product_id, 10) }
           }
         }
       });
-      return { message: "Todays rate updated", data: response };
+      return { message: "Today's rate updated", data: response };
     }
 
   } catch (err) {
@@ -299,7 +351,6 @@ const dailyRatesListForVendor = async (user_id, category_id, query) => {
         { vendor: { company_name: { contains: search, mode: 'insensitive' } } }
       ],
       vendor_id: user_id
-      // category_id: category_id || undefined
     };
 
     const today = new Date();
@@ -314,7 +365,6 @@ const dailyRatesListForVendor = async (user_id, category_id, query) => {
         grade: { select: { name: true } },
         quantity: true,
         product_image: true,
-        base_price: true,
         vendor: {
           select: {
             id: true,
@@ -391,7 +441,6 @@ const dailyRatesListForVendor = async (user_id, category_id, query) => {
   }
 };
 
-
 const productDetail = async(user, id, role) => {
   let selectClause = {
     id: true,
@@ -400,7 +449,6 @@ const productDetail = async(user, id, role) => {
     name: true,
     quantity: true,
     product_image: true,
-    base_price: true,
     vendor: {
       select: {
         id: true,
@@ -429,7 +477,7 @@ const productDetail = async(user, id, role) => {
       const product = await prisma.product.findFirst({
         where: {
           id: parseInt(id),
-          vendor_id: user.id
+          vendor_id: user.vendor.id
         },
         select: selectClause
       });
@@ -439,14 +487,13 @@ const productDetail = async(user, id, role) => {
       throw ({ status: 500, message: "Sorry, Something went wrong!!!" });
     }
   }
-}
-
+};
 
 const getProductMiniForVendor = async (user) => {
   try {
     const data = await prisma.product.findMany({
       where: {
-        vendor_id: user.id
+        vendor_id: user.vendor.id
       },
       select: {
         id: true,
@@ -460,7 +507,7 @@ const getProductMiniForVendor = async (user) => {
   } catch (err) {
     throw ({ status: 500, message: "Sorry, Something went wrong!!!" });
   }
-}
+};
 
 module.exports = {
   getProductsForUser,
@@ -469,10 +516,9 @@ module.exports = {
   getGradesList,
   updateProducts,
   getCategoriesList,
-  updateProducts,
   getUnitList,
   dailyRatesListForVendor,
   updateDailyRatesForVendor,
   productDetail,
   getProductMiniForVendor
-}
+};

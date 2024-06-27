@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql" // Adjust according to your database
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -15,8 +15,8 @@ model User {
   last_logged_in    DateTime?
   verified          Boolean   @default(false)
   verification_code String?
-  created_at        DateTime?  @default(now())
-  updated_at        DateTime?  @updatedAt
+  created_at        DateTime? @default(now())
+  updated_at        DateTime? @updatedAt
 
   passwordResetToken String?
   passwordResetAt    DateTime?
@@ -100,7 +100,6 @@ model Product {
   grade_id          Int
   quantity          Int
   product_image     String
-  base_price        Float
   created_at        DateTime  @default(now())
   updated_at        DateTime  @updatedAt
   vendor_id         Int

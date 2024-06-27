@@ -44,7 +44,7 @@ const createProductsHandler = async(req, res, next) => {
 
 
 const updateProductsHandler = async(req, res, next) => {
-    
+    console.log("here");
     try {
         const product = await updateProducts(req.params.id, req.user, req.body, req.files);
         return res.status(201).send(product);

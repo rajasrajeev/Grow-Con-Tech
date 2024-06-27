@@ -5,8 +5,7 @@ const productSchema = Joi.object({
   category_id: Joi.number().integer().required(),
   grade_id: Joi.number().integer().required(),
   quantity: Joi.number().integer().min(0).required(),
-  product_image: Joi.string().uri().required(),
-  base_price: Joi.number().positive().required()
+  product_image: Joi.string().uri().required()
 });
 
 module.exports = productSchema;
