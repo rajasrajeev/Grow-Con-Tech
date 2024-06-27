@@ -1,12 +1,11 @@
 
 const errorLogger = (error, request, response, next) => {
-    console.log(`error ========> ${error}`);
+    console.log(error);
     next(error);
 }
 
 
 const errorResponder = (error, request, response, next) => {
-    console.log(`error ========> ${error}`);
     response.header("Content-Type", 'application/json');
     const status = error.status || 500;
     
