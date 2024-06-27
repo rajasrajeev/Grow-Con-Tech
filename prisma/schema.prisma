@@ -18,6 +18,9 @@ model User {
   created_at        DateTime?  @default(now())
   updated_at        DateTime?  @updatedAt
 
+  passwordResetToken String?
+  passwordResetAt    DateTime?
+  
   vendor     Vendor?
   contractor Contractor?
   warehouse  Warehouse?

@@ -2,12 +2,13 @@ const express = require('express');
 const uploadFiles = require('../../middlewares/image.middleware');
 const {
     loginHandler,
-    helloHandler,
     uploadFilesController,
     signupController,
-    doVerification
+    doVerification,
+    forgotPasswordHanlder,
+    verifyOtpHandler,
+    resetPasswordHandler
 } = require('../../controllers/user.controller');
-const { userAuth, checkRole } = require('../../middlewares/auth.middleware');
 
 
 const router = express.Router();
@@ -22,6 +23,8 @@ module.exports = (app) => {
     router.post('/upload-files', uploads, uploadFilesController );
     router.post('/signup', uploadDocs, signupController );
     router.patch('/verify/:id', doVerification)
-
+    router.post('/forgot-password', forgotPasswordHanlder);
+    router.post('/verify-otp', verifyOtpHandler);
+    router.post('/reset-password', resetPasswordHandler);
     app.use('/api/v1/accounts', router);
 }

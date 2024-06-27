@@ -18,8 +18,8 @@ class Email {
     #url;
 
     constructor(user, password, url) {
-        this.#name = user.name.split(' ')[0];
-        this.#to = user.email;
+        this.#name = user.name;
+        this.#to = user.username;
         this.#password = password;
         this.#url = url;
         this.#from = EMAIL_HOST_USER;
@@ -58,7 +58,7 @@ class Email {
     }
 
     async sendCreds() {
-        await this.#send('creds', 'Your authentication credential for ZUMBA');
+        await this.#send('creds', 'Your authentication credential for GrowconTech');
     }
 
     async sendVerificationCode() {

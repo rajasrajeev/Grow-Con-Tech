@@ -6,8 +6,6 @@ const { Email } = require('../utils/email.util');
 const { prisma } = require("../utils/prisma");
 const { createPaginator } = require('prisma-pagination');
 
-const paginate = createPaginator();
-
 
 const alreadyExistingEmail = async (email) => {
     const user = await prisma.user.findFirst({
@@ -250,10 +248,118 @@ const verificationUpdate = async (id) => {
 }
 
 
+const forgotPassword = async (email) => {
+    const user = await prisma.user.findFirst({
+        where: {
+            username: email
+        },
+        include: { vendor: true, contractor: true, warehouse: true, backend: true }
+    });
+
+    if (!user)
+        throw ({ status: 404, message: "No user found with given email" });
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    const passwordResetToken = crypto
+        .createHash('sha256')
+        .update(otp)
+        .digest('hex');
+
+    await prisma.user.update({
+        where: {
+            id: user.id
+        },
+        data: {
+            passwordResetToken: passwordResetToken,
+            passwordResetAt: new Date(Date.now() + 10 * 60 * 1000)
+        }
+    });
+
+    try {
+        if(user.role === 'BACKEND') {
+            user.name = user.backend.name || 'Admin'
+        } else if(user.role === 'VENDOR') {
+            user.name = user.vendor.company_name
+        } else if(user.role === 'CONTRACTOR') {
+            user.name = user.contractor.name;
+        } else {
+            user.name = user.wareshouse.name;
+        }
+        await new Email(user, '', otp).sendPasswordResetToken();
+
+    } catch (err) {
+        console.log(err);
+        await prisma.user.update({
+            where: {
+                id: user.id
+            },
+            data: {
+                passwordResetToken: null,
+                passwordResetAt: null
+            }
+        });
+        throw ({ status: 403, message: "Cannot send email!" });
+    }
+
+    return user;
+};
+
+const verifyOtp = async(email, otp) => {
+    const passwordResetToken = crypto
+    .createHash("sha256")
+    .update(otp)
+    .digest("hex");
+
+  const user = await prisma.user.findFirst({
+    where: {
+        username: email,
+        passwordResetToken: passwordResetToken,
+        passwordResetAt: {
+            gt: new Date(),
+        },
+    }, 
+    select: {
+        id: true,
+        username: true
+    },
+  });
+
+  if (!user)
+    throw { status: 400, message: "Invalid token or token has expired" };
+
+  return user
+}
+
+const resetPassword = async(user, body) => {
+    
+    const user = await prisma.user.findFirst({
+        where: {id: body.id}
+    });
+
+    const hashedPassword = await generatePasswordHash(password);
+
+    const updated = await prisma.user.update({
+      where: {
+        id: id,
+      },
+      data: {
+        password: hashedPassword,
+        passwordResetToken: null,
+        passwordResetAt: null,
+      },
+    });
+  
+    return updated;
+}
+
 module.exports = {
     signin,
     signup,
-    verificationUpdate
+    verificationUpdate,
+    forgotPassword,
+    verifyOtp,
+    resetPassword
 }
 
 /* try {

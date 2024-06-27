@@ -1,7 +1,10 @@
 const { 
     signin,
     signup,
-    verificationUpdate
+    verificationUpdate,
+    forgotPassword,
+    verifyOtp,
+    resetPassword
 } = require("../services/user.service");
 
 
@@ -54,10 +57,40 @@ const doVerification = async(req, res, next) => {
     }
 }
 
+const forgotPasswordHanlder = async(req, res, next) => {
+    try {
+        const data = await forgotPassword(req.body.email);
+        return res.status(200).send({ message : "An otp is send to provided email"});
+    } catch(err) {
+        next(err);
+    }
+}
+
+const verifyOtpHandler = async(req, res, next) => {
+    try {
+        const data = await verifyOtp(req.body.email, req.body.otp);
+        return res.status(200).send(data);
+    } catch(err) {
+        next(err);
+    }
+}
+
+const resetPasswordHandler = async(req, res, next) => {
+    try {
+        const data = await resetPassword(req.user, req.body);
+        return res.status(200).send({ message : "Password reset completed successfully"});
+    } catch(err) {
+        next(err);
+    }
+}
+
 
 module.exports = {
     loginHandler,
     uploadFilesController,
     signupController,
-    doVerification
+    doVerification,
+    forgotPasswordHanlder,
+    verifyOtpHandler,
+    resetPasswordHandler
 }
