@@ -333,11 +333,26 @@ const verifyOtp = async(email, otp) => {
 
 const resetPassword = async(body) => {
     try {
+        const passwordResetToken = crypto
+        .createHash("sha256")
+        .update(body.otp)
+        .digest("hex");
+
+        const user = await prisma.user.findFirst({
+            where: {
+                id: body.id,
+                passwordResetToken: passwordResetToken,
+            }
+        });
+
+        if(!user) throw({status: 500, message: "cannot find user"});
+
         const hashedPassword = await generatePasswordHash(body.password);
     
         const updated = await prisma.user.update({
           where: {
             id: body.id,
+            
           },
           data: {
             password: hashedPassword,
@@ -348,7 +363,6 @@ const resetPassword = async(body) => {
       
         return updated;
     } catch (err) {
-        console.log(err);
         throw({status: 500, message: "Something went wrong!"});
     }
 
