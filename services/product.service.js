@@ -373,7 +373,8 @@ const dailyRatesListForVendor = async (user, category_id, query) => {
           },
           orderBy: {
             created_at: 'desc'
-          }
+          }, 
+          take: 2
         }
       },
       orderBy: {
@@ -438,7 +439,12 @@ const productDetail = async(user, id, role) => {
       }
     },
     unit: true,
-    dailyRates: true
+    dailyRates: {
+      orderBy: {
+        created_at: 'desc'
+      },
+      take: 1
+    }
   };
 
   if(role === 'BACKEND') {
