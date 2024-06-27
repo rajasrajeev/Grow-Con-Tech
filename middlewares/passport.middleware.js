@@ -13,9 +13,12 @@ module.exports = passport => {
     passport.use(
         new Strategy(optns, async(payload, done) => {
             if(payload.role == "VENDOR") {
-                prisma.vendor.findFirst({
+                prisma.user.findFirst({
                     where: {
-                        user_id: payload.user_id
+                        id: payload.user_id
+                    }, 
+                    include: {
+                        vendor: true
                     }
                 })
                 .then(user => {
@@ -24,6 +27,7 @@ module.exports = passport => {
                     }
                     return done(null, false);
                 }).catch(err => {
+                    console.log(err)
                     return done(null, false);
                 });
             } else {

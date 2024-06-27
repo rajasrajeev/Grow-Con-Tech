@@ -16,7 +16,7 @@ const productSchema = require('../schemas/product.schema');
 
 const getProductsHandler = async(req, res, next) => {
     try {
-        const data = await getProductsForUser(req.query.role, parseInt(req.user.id, 10) , req.query);
+        const data = await getProductsForUser(req.query.role, parseInt(req.user.vendor.id, 10) , req.query);
         return res.status(200).send(data);
     } catch(err) {
         next(err);
