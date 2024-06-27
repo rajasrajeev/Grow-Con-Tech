@@ -96,7 +96,7 @@ const getUnitHandler = async(req, res, next) => {
 
 const getDailyRatesForVendorHandler = async(req, res, next) => {
     try {
-        const data = await dailyRatesListForVendor( parseInt(req.user.id, 10) || '', parseInt(req.query.category_id) || '', req.query);
+        const data = await dailyRatesListForVendor(req.user, parseInt(req.query.category_id) || '', req.query);
         return res.status(200).send(data);
     } catch(err) {
         next(err);

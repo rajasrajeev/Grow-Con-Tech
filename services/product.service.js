@@ -265,7 +265,7 @@ const deleteProductWithId = async (id) => {
     });
     return del;
   } catch (err) {
-    console.error(err);
+    console.log(err);
     throw { status: 403, message: "Sorry, Something went wrong!!!" };
   }
 };
@@ -339,7 +339,7 @@ const updateDailyRatesForVendor = async (body, user) => {
   }
 };
 
-const dailyRatesListForVendor = async (user_id, category_id, query) => {
+const dailyRatesListForVendor = async (user, category_id, query) => {
   try {
     let page = query.page || 1;
     let perPage = 8;
@@ -350,7 +350,8 @@ const dailyRatesListForVendor = async (user_id, category_id, query) => {
         { name: { contains: search, mode: 'insensitive' } },
         { vendor: { company_name: { contains: search, mode: 'insensitive' } } }
       ],
-      vendor_id: user_id
+      vendor_id: user.vendor.id
+      // category_id: category_id || undefined
     };
 
     const today = new Date();
