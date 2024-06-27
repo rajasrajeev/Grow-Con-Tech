@@ -314,7 +314,7 @@ const verifyOtp = async(email, otp) => {
   });
 
   if (!user)
-    throw { status: 400, message: "Invalid token or token has expired" };
+    throw ({ status: 400, message: "Invalid token or token has expired" });
 
   return user
 }
