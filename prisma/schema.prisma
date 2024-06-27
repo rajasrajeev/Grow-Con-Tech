@@ -82,12 +82,13 @@ model Warehouse {
 }
 
 model Backend {
-  id         Int      @id @default(autoincrement())
-  user       User     @relation(fields: [user_id], references: [id])
-  user_id    Int      @unique
-  name       String
-  email      String
-  phone      String
+  id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [user_id], references: [id])
+  user_id     Int      @unique
+  name        String
+  email       String
+  phone       String
+  employee_id String? 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }

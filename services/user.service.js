@@ -1,10 +1,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const {SECRET, ORIGIN_URL} = require("../config/index");
+const { SECRET } = require("../config/index");
 const { Email } = require('../utils/email.util');
 const { prisma } = require("../utils/prisma");
-const { createPaginator } = require('prisma-pagination');
 
 
 const alreadyExistingEmail = async (email) => {
@@ -212,19 +211,8 @@ const createProfile = async (body, userId, files) => {
         return warehouse;
 
     } else {
-        const backend = await prisma.backend.create({
-            data: {
-                user: {
-                    connect: { id: userId } // Connect to an existing user with ID 7
-                    // or if you need to create a new user
-                    // create: { /* user data here */ }
-                },
-                name: body.name,
-                phone: body.phone,
-                email: body.email
-            },
-        });
-        return backend;
+
+        throw({status: 400, message: "Cannot create user"})
     }
 }
 
@@ -374,7 +362,8 @@ module.exports = {
     verificationUpdate,
     forgotPassword,
     verifyOtp,
-    resetPassword
+    resetPassword,
+    generatePasswordHash
 }
 
 /* try {
