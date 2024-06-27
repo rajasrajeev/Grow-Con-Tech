@@ -70,7 +70,7 @@ const createProduct = async (req, user, files) => {
           connect: { id: parseInt(req.grade_id, 10) }
         },
         vendor: {
-          connect: { id: parseInt(user.id, 10) }
+          connect: { id: parseInt(user.vendor.id, 10) }
         },
         unit: {
           connect: { id: parseInt(req.unit_id, 10) }
@@ -138,7 +138,7 @@ const updateProducts = async (id, user, req, files) => {
     }
 
     data.vendor = {
-      connect: { id: parseInt(user.id, 10) }
+      connect: { id: parseInt(user.vendor.id, 10) }
     };
 
     if (req.unit_id) {
@@ -206,6 +206,7 @@ const deleteProductWithId = async (id) => {
     });
     return del;
   } catch (err) {
+    console.log(err);
     throw { status: 403, message: "Sorry, Something went wrong!!!" };
   }
 }
