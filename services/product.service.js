@@ -160,7 +160,7 @@ const updateProducts = async (id, user, req, files) => {
     });
 
     if (!product) {
-      throw { status: 404, message: "Product not found" };
+      throw ({ status: 404, message: "Product not found" });
     }
 
     if (files && files.product_image && files.product_image.length > 0) {
@@ -200,13 +200,13 @@ const updateProducts = async (id, user, req, files) => {
       await prisma.dailyRate.update({
         where: { id: existingRate.id },
         data: {
-          daily_rate: parseFloat(req.daily_rate)
+          daily_rate: parseFloat(req.base_price)
         }
       });
     } else {
       await prisma.dailyRate.create({
         data: {
-          daily_rate: parseFloat(req.daily_rate),
+          daily_rate: parseFloat(req.base_price),
           product: {
             connect: { id: parseInt(id, 10) }
           }
@@ -250,7 +250,7 @@ const deleteProductWithId = async (id) => {
     return del;
   } catch (err) {
     console.log(err);
-    throw { status: 403, message: "Sorry, Something went wrong!!!" };
+    throw ({ status: 403, message: "Sorry, Something went wrong!!!" });
   }
 };
 
