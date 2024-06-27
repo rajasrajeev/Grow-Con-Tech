@@ -451,7 +451,10 @@ const getProductMiniForVendor = async (user) => {
       select: {
         id: true,
         name: true
-      }
+      },
+      orderBy: {
+        name: 'asc'
+      },
     });
     return data;
   } catch (err) {
