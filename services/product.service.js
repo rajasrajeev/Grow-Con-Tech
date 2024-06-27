@@ -87,9 +87,6 @@ const createProduct = async (req, user, files) => {
     await prisma.dailyRate.create({
       data: {
         daily_rate: parseFloat(req.base_price),
-        user: {
-          connect: { id: parseInt(user.vendor.id, 10) }
-        },
         product: {
           connect: { id: newProduct.id }
         }
@@ -146,10 +143,6 @@ const updateProducts = async (id, user, req, files) => {
       };
     }
 
-    data.vendor = {
-      connect: { id: parseInt(user.vendor.id, 10) }
-    };
-
     if (req.unit_id) {
       data.unit = {
         connect: { id: parseInt(req.unit_id, 10) }
@@ -196,7 +189,6 @@ const updateProducts = async (id, user, req, files) => {
     const existingRate = await prisma.dailyRate.findFirst({
       where: {
         product_id: parseInt(id, 10),
-        user_id: parseInt(user.vendor.id, 10),
         created_at: {
           gte: startOfToday,
           lte: endOfToday
@@ -215,9 +207,6 @@ const updateProducts = async (id, user, req, files) => {
       await prisma.dailyRate.create({
         data: {
           daily_rate: parseFloat(req.daily_rate),
-          user: {
-            connect: { id: parseInt(user.vendor.id, 10) }
-          },
           product: {
             connect: { id: parseInt(id, 10) }
           }
@@ -227,12 +216,7 @@ const updateProducts = async (id, user, req, files) => {
 
     return newProduct;
   } catch (err) {
-    console.error(err);
-    if (!err.status) {
-      err.status = 500;
-      err.message = "Sorry, something went wrong!";
-    }
-    throw err;
+    throw ({ status: 403, message: "Sorry, Something went wrong!!!" });
   }
 };
 
@@ -306,7 +290,6 @@ const updateDailyRatesForVendor = async (body, user) => {
     const existingRate = await prisma.dailyRate.findFirst({
       where: {
         product_id: parseInt(body.product_id, 10),
-        user_id: parseInt(user.vendor.id, 10),
         created_at: {
           gte: startOfToday,
           lte: endOfToday
@@ -322,9 +305,6 @@ const updateDailyRatesForVendor = async (body, user) => {
       response = await prisma.dailyRate.create({
         data: {
           daily_rate: parseFloat(body.daily_rate),
-          user: {
-            connect: { id: parseInt(user.vendor.id, 10) }
-          },
           product: {
             connect: { id: parseInt(body.product_id, 10) }
           }
