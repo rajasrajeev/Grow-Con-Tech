@@ -77,7 +77,7 @@ const verifyOtpHandler = async(req, res, next) => {
 
 const resetPasswordHandler = async(req, res, next) => {
     try {
-        const data = await resetPassword(req.user, req.body);
+        await resetPassword(req.body);
         return res.status(200).send({ message : "Password reset completed successfully"});
     } catch(err) {
         next(err);
