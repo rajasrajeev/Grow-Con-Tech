@@ -248,7 +248,7 @@ const updateDailyRatesForVendor = async (body, user) => {
     const existingRate = await prisma.dailyRate.findFirst({
       where: {
         product_id: parseInt(body.product_id, 10),
-        user_id: parseInt(user.user_id, 10),
+        user_id: parseInt(user.id, 10),
         created_at: {
           gte: startOfToday,
           lte: endOfToday
@@ -271,7 +271,7 @@ const updateDailyRatesForVendor = async (body, user) => {
         data: {
           daily_rate: parseFloat(body.daily_rate),
           user: {
-            connect: { id: parseInt(user.user_id, 10) }
+            connect: { id: parseInt(user.id, 10) }
           },
           product: {
             connect: { id: parseInt(body.product_id, 10) }
@@ -287,7 +287,7 @@ const updateDailyRatesForVendor = async (body, user) => {
   }
 };
 
-const dailyRatesListForVendor = async (user_id, category_id, query) => {
+const dailyRatesListForVendor = async (user, category_id, query) => {
   try {
     let page = query.page || 1;
     let perPage = 8;
@@ -298,7 +298,7 @@ const dailyRatesListForVendor = async (user_id, category_id, query) => {
         { name: { contains: search, mode: 'insensitive' } },
         { vendor: { company_name: { contains: search, mode: 'insensitive' } } }
       ],
-      vendor_id: user_id
+      vendor_id: user.vendor.id
       // category_id: category_id || undefined
     };
 
@@ -429,7 +429,7 @@ const productDetail = async(user, id, role) => {
       const product = await prisma.product.findFirst({
         where: {
           id: parseInt(id),
-          vendor_id: user.id
+          vendor_id: user.vendor.id
         },
         select: selectClause
       });
@@ -446,7 +446,7 @@ const getProductMiniForVendor = async (user) => {
   try {
     const data = await prisma.product.findMany({
       where: {
-        vendor_id: user.id
+        vendor_id: user.vendor.id
       },
       select: {
         id: true,
