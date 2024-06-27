@@ -103,7 +103,7 @@ const getMiniList = async (query) => {
         const vendors = await prisma.vendor.findMany({
             where: {
                 status: "Approved",
-                company_name: {contains: query.search}
+                company_name: {contains: query.search, mode: 'insensitive'}
             },
             select: {
                 id: true,
