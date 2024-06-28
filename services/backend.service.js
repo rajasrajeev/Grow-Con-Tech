@@ -168,7 +168,48 @@ const getDailyRates = async (vendor_id, query) => {
       }
 }
 
+const updateDailyRates = async (body) => { 
+    try {
+        const today = new Date();
+        const startOfToday = startOfDay(today);
+        const endOfToday = endOfDay(today);
+    
+        const existingRate = await prisma.dailyRate.findFirst({
+          where: {
+            product_id: parseInt(body.product_id, 10),
+            created_at: {
+              gte: startOfToday,
+              lte: endOfToday
+            }
+          }
+        });
+
+        console.log(existingRate);
+    
+        let response;
+    
+        if (existingRate) {
+          return { message: "Sorry, today's rate is already updated", success: false };
+        } else {
+          response = await prisma.dailyRate.create({
+            data: {
+              daily_rate: parseFloat(body.daily_rate),
+              product: {
+                connect: { id: parseInt(body.product_id, 10) }
+              }
+            }
+          });
+          return { message: "Today's rate updated", data: response };
+        }
+    
+      } catch (err) {
+        console.log(err);
+        throw ({ status: 403, message: "Sorry, Something went wrong!!!" });
+      }
+}
+
 module.exports = {
     createEmployee,
-    getDailyRates
+    getDailyRates,
+    updateDailyRates
 }

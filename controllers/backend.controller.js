@@ -1,5 +1,6 @@
 const { createEmployee,
-        getDailyRates 
+        getDailyRates,
+        updateDailyRates
 } = require('../services/backend.service');
 
 
@@ -21,7 +22,17 @@ const getDailyRatesHandler = async (req, res, next) => {
     }
 }
 
+const updateDailyRatesHandler = async (req, res, next) => {
+    try {
+        const data = await updateDailyRates(req.body);
+        return res.status(200).send(data);
+    } catch(err) {
+        next(err);
+    }
+}
+
 module.exports = {
     createEmployeeHandler,
-    getDailyRatesHandler
+    getDailyRatesHandler,
+    updateDailyRatesHandler
 }
