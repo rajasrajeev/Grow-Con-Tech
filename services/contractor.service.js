@@ -13,10 +13,10 @@ const getContractors = async (query) => {
 
         let whereClause = {
             OR: [
-                { contractor_id: { contains: search } },
-                { company_name: { contains: search } },
-                { email: { contains: search } },
-                { phone: { contains: search } }
+                { contractor_id: { contains: search, mode: 'insensitive' } },
+                { company_name: { contains: search, mode: 'insensitive' } },
+                { email: { contains: search, mode: 'insensitive' } },
+                { phone: { contains: search, mode: 'insensitive' } }
             ]
         };
 

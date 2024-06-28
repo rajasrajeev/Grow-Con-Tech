@@ -15,8 +15,8 @@ const getProductsForUser = async (role, user_id, query) => {
 
       let whereClause = {
         OR: [
-          { name: { contains: search } },
-          { vendor: { company_name: { contains: search } } },
+          { name: { contains: search, mode: 'insensitive' } },
+          { vendor: { company_name: { contains: search, mode: 'insensitive' } } },
         ],
         vendor_id: user_id
       };
