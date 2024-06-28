@@ -15,7 +15,7 @@ const createEmployeeHandler = async (req, res, next) => {
 
 const getDailyRatesHandler = async (req, res, next) => {
     try {
-        const data = await getDailyRates(req.params.vendorid, req.query);
+        const data = await getDailyRates(parseInt(req.params.id), req.query);
         return res.status(200).send(data);
     } catch(err) {
         next(err);
