@@ -443,7 +443,7 @@ const productDetail = async(user, id, role) => {
       orderBy: {
         created_at: 'desc'
       },
-      take: 1
+      take: 2
     }
   };
 
