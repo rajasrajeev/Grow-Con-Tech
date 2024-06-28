@@ -1,4 +1,6 @@
-const { createEmployee } = require('../services/backend.service');
+const { createEmployee,
+        getDailyRates 
+} = require('../services/backend.service');
 
 const createEmployeeHandler = async (req, res, next) => {
     try {
@@ -8,7 +10,16 @@ const createEmployeeHandler = async (req, res, next) => {
         next(err);
     }
 }
+const getDailyRatesHandler = async (req, res, next) => {
+    try {
+        const data = await getDailyRates(req.params.vendorid, body.query);
+        return res.status(201).send(data);
+    } catch(err) {
+        next(err);
+    }
+}
 
 module.exports = {
-    createEmployeeHandler
+    createEmployeeHandler,
+    getDailyRatesHandler
 }

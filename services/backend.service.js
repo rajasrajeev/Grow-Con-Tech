@@ -55,6 +55,119 @@ const createEmployee = async (body) => {
     }
 }
 
+const getDailyRates = async (vendor_id, query) => {
+    try {
+        let page = query.page || 1;
+        let perPage = 8;
+        let search = query.search || '';
+        let filter = query.filter || ''; 
+    
+        let whereClause = {
+          OR: [
+            { name: { contains: search, mode: 'insensitive' } },
+            { vendor: { company_name: { contains: search, mode: 'insensitive' } } }
+          ],
+          vendor_id: vendor_id
+          // category_id: category_id || undefined
+        };
+
+        if (filter) {
+            whereClause = {
+                ...whereClause,
+                AND: { status: filter }
+            };
+        }
+    
+        const today = new Date();
+        const yesterday = subDays(today, 1);
+    
+        const products = await prisma.product.findMany({
+          where: whereClause,
+          select: {
+            id: true,
+            name: true,
+            category: { select: { name: true } },
+            grade: { select: { name: true } },
+            quantity: true,
+            product_image: true,
+            vendor: {
+              select: {
+                id: true,
+                vendor_id: true,
+                company_name: true
+              }
+            },
+            unit: { select: { name: true } },
+            dailyRates: {
+              where: {
+                OR: [
+                  {
+                    created_at: {
+                      gte: startOfDay(today),
+                      lte: endOfDay(today)
+                    }
+                  },
+                  {
+                    created_at: {
+                      gte: startOfDay(yesterday),
+                      lte: endOfDay(yesterday)
+                    }
+                  }
+                ]
+              },
+              orderBy: {
+                created_at: 'desc'
+              }, 
+              take: 2
+            }
+          },
+          orderBy: {
+            id: 'desc'
+          },
+          skip: (page - 1) * perPage,
+          take: perPage
+        });
+    
+        const totalCount = await prisma.product.count({ where: whereClause });
+    
+        const enhancedProducts = products.map(product => {
+          const todaysRate = product.dailyRates.find(rate => rate.created_at >= startOfDay(today) && rate.created_at <= endOfDay(today));
+          const yesterdaysRate = product.dailyRates.find(rate => rate.created_at >= startOfDay(yesterday) && rate.created_at <= endOfDay(yesterday));
+    
+          return {
+            id: product.id,
+            name: product.name,
+            productImage: product.product_image,
+            category: product.category.name,
+            grade: product.grade.name,
+            quantity: product.quantity,
+            unit: product.unit.name,
+            yesterdaysPrice: yesterdaysRate ? yesterdaysRate.daily_rate : null,
+            todaysPrice: todaysRate ? todaysRate.daily_rate : null,
+            // isUpdated: todaysRate ? true : false,
+            vendor: product.vendor
+          };
+        });
+    
+        return {
+          data: enhancedProducts,
+          meta: {
+            total: totalCount,
+            lastPage: Math.ceil(totalCount / perPage),
+            currentPage: page,
+            perPage: perPage,
+            prev: page > 1 ? page - 1 : null,
+            next: page < Math.ceil(totalCount / perPage) ? page + 1 : null
+          }
+        };
+    
+      } catch (err) {
+        console.error(err);
+        throw ({ status: 500, message: "Cannot get Products" });
+      }
+}
+
 module.exports = {
-    createEmployee
+    createEmployee,
+    getDailyRates
 }
