@@ -58,14 +58,12 @@ const generateToken = (user) => {
 
 
 const signin = async (username, password) => {
-    console.log(username, password);
     const user = await prisma.user.findFirst({
         where: {
             username: username
         },
         include: { vendor: true, contractor: true, warehouse: true, backend: true }
     });
-    console.log(user);
 
     if (!user) throw ({status: 400, message: "Invalid user credentials!!"});
     if(!user.verified) throw ({status: 400, message: "Email not verified"});
