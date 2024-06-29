@@ -1,7 +1,9 @@
 const { prisma } = require("../utils/prisma");
 const { generatePasswordHash } = require('./user.service');
 const { subDays, startOfDay, endOfDay } = require('date-fns');
+const { createPaginator } = require("prisma-pagination");
 
+const paginate = createPaginator();
 
 const createEnquiry = async (user, body) => {
     try {
@@ -43,7 +45,7 @@ const createEnquiry = async (user, body) => {
 }
 
 const getEnquiries = async (vendor_id, query) => {
-    try {
+    /* try {
         let page = query.page || 1;
         let perPage = 8;
         let search = query.search || '';
@@ -117,6 +119,58 @@ const getEnquiries = async (vendor_id, query) => {
     } catch (error) {
         console.error(error);
         throw new Error('Error fetching enquiries');
+    } */
+
+    try {
+        let page = query.page || 1;
+        let perPage = 8;
+        let search = query.search || '';
+        let status = query.status || '';
+        let contractor = query.contractor || '';
+
+        let whereClause = {
+            AND: [
+                {
+                    OR: [
+                        { enquiry_id: { contains: search, mode: 'insensitive' } },
+                        { product: { name: { contains: search, mode: 'insensitive' } } },
+                        { contractor: { name: { contains: search, mode: 'insensitive' } } }
+                    ]
+                },
+                { vendor_id: vendor_id }
+            ]
+        };
+
+        if (status) {
+            whereClause.AND.push({ negotiations :{ status: status }});
+        }
+        if (contractor) {
+            whereClause.AND.push({contractor: { name: contractor }});
+        }
+        const contractors = await paginate(prisma.enquiry, {
+            where: whereClause,
+            include: {
+                product: { select: { id: true, name: true } },
+                vendor: { select: { id:true, company_name: true } },
+                contractor: { select: { id: true, name: true } },
+                negotiations: {
+                    orderBy: {
+                        created_at: 'desc'
+                    },
+                    take: 1
+                }
+            },
+            orderBy: {
+                id: 'desc'
+            },
+        }, 
+        { page: page, perPage: perPage });
+
+        return contractors;
+
+    } catch (err) {
+        console.error(err);
+        throw ({status: 500, message: "Cannot get enquiries"});
     }
 };
 
