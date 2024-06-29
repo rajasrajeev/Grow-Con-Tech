@@ -10,9 +10,10 @@ const router = express.Router();
 
 module.exports = (app) => {
     // Define routes for handling enquiries
+    router.patch('/negotiation/:id', userAuth, checkRole(['VENDOR']), updateNegotiationHandler);
     router.post('/', userAuth,checkRole(['CONTRACTOR']), createEnquiryHandler);
     router.get('/', userAuth, getEnquiriesHandler);
-    router.patch('/negotiation/:id', userAuth, checkRole(['VENDOR']), updateNegotiationHandler);
+    
 
     app.use('/api/v1/enquiry', router);
 }
