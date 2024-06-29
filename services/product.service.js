@@ -319,11 +319,12 @@ const updateDailyRatesForVendor = async (body, user) => {
   }
 };
 
-const dailyRatesListForVendor = async (user, category_id, query) => {
+const dailyRatesListForVendor = async (user, query) => {
   try {
     let page = query.page || 1;
     let perPage = 8;
     let search = query.search || '';
+    let filter = query.filter || '';
 
     let whereClause = {
       OR: [
@@ -333,6 +334,13 @@ const dailyRatesListForVendor = async (user, category_id, query) => {
       vendor_id: user.vendor.id
       // category_id: category_id || undefined
     };
+
+    if (filter) {
+      whereClause = {
+        ...whereClause,
+        AND: { category: { name: filter } }
+      }
+    }
 
     const today = new Date();
     const yesterday = subDays(today, 1);

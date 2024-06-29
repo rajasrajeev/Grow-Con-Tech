@@ -62,15 +62,7 @@ const getDailyRates = async (vendor_id, query) => {
         let perPage = 8;
         let search = query.search || '';
         let filter = query.filter || ''; 
-    
-        /* let whereClause = {
-          OR: [
-            { name: { contains: search, mode: 'insensitive' } },
-            { vendor: { company_name: { contains: search, mode: 'insensitive' } } }
-          ],
-          vendor_id: vendor_id
-          // category_id: category_id || undefined
-        }; */
+
         let whereClause = {
             AND: [
               {
@@ -86,7 +78,7 @@ const getDailyRates = async (vendor_id, query) => {
         if (filter) {
             whereClause = {
                 ...whereClause,
-                AND: { status: filter }
+                AND: { category: { name: filter } }
             };
         }
     
