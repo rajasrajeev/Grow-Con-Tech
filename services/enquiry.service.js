@@ -69,9 +69,9 @@ const getEnquiries = async (vendor_id, query) => {
         const enquiries = await prisma.enquiry.findMany({
             where: whereClause,
             include: {
-                product: { select: { name: true } },
-                vendor: { select: { company_name: true } },
-                contractor: { select: { name: true } },
+                product: { select: { id: true, name: true } },
+                vendor: { select: { id:true, company_name: true } },
+                contractor: { select: { id: true, name: true } },
                 negotiations: {
                     orderBy: {
                         created_at: 'desc'
