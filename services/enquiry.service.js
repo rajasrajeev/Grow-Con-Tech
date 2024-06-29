@@ -147,7 +147,7 @@ const getEnquiries = async (vendor_id, query) => {
         if (contractor) {
             whereClause.AND.push({contractor: { name: contractor }});
         }
-        const contractors = await paginate(prisma.enquiry, {
+        const enquiry = await paginate(prisma.enquiry, {
             where: whereClause,
             include: {
                 product: { select: { id: true, name: true } },
@@ -166,7 +166,7 @@ const getEnquiries = async (vendor_id, query) => {
         }, 
         { page: page, perPage: perPage });
 
-        return contractors;
+        return enquiry;
 
     } catch (err) {
         console.error(err);
