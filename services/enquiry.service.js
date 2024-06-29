@@ -128,13 +128,11 @@ const getContractors = async (user) => {
                     }
                 }
             }
-        });
-    
-        const contractorNames = contractors.map(enquiry => ({
+        }).map(enquiry => ({
             name: enquiry.contractor.name
         }));
     
-        return contractorNames;
+        return contractors;
     } catch (err) {
         console.log(err);
         throw { status: 403, message: "Sorry, something went wrong!!!" };
