@@ -127,12 +127,15 @@ const getContractors = async (user) => {
                         name: true
                     }
                 }
-            }
-        }).map(enquiry => ({
+            },
+            distinct: ['contractor_id']
+        });
+    
+        const contractorNames = contractors.map(enquiry => ({
             name: enquiry.contractor.name
         }));
     
-        return contractors;
+        return contractorNames;
     } catch (err) {
         console.log(err);
         throw { status: 403, message: "Sorry, something went wrong!!!" };
