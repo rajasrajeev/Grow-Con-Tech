@@ -1,6 +1,6 @@
 const { createEnquiry, 
     getEnquiries,
-    updateNegotiation } = require('../services/enquiry.service');
+    updateNegotiation, getContractors } = require('../services/enquiry.service');
 
 
 const createEnquiryHandler = async (req, res, next) => {
@@ -32,9 +32,19 @@ const updateNegotiationHandler = async (req, res, next) => {
     }
 }
 
+const getContractorsHandler = async (req, res, next) => {
+    try {
+        const data = await getContractors(req.user);
+        return res.status(200).send(data);
+    } catch(err) {
+        next(err);
+    }
+}
+
 
 module.exports = {
     createEnquiryHandler,
     getEnquiriesHandler,
-    updateNegotiationHandler
+    updateNegotiationHandler,
+    getContractorsHandler
 }

@@ -45,81 +45,6 @@ const createEnquiry = async (user, body) => {
 }
 
 const getEnquiries = async (vendor_id, query) => {
-    /* try {
-        let page = query.page || 1;
-        let perPage = 8;
-        let search = query.search || '';
-        let filter = query.filter || '';
-
-        let whereClause = {
-            AND: [
-                {
-                    OR: [
-                        { enquiry_id: { contains: search, mode: 'insensitive' } },
-                        { product: { name: { contains: search, mode: 'insensitive' } } },
-                        { contractor: { name: { contains: search, mode: 'insensitive' } } }
-                    ]
-                },
-                { vendor_id: vendor_id }
-            ]
-        };
-
-        if (filter) {
-            whereClause.AND.push({ status: filter });
-        }
-
-        const enquiries = await prisma.enquiry.findMany({
-            where: whereClause,
-            include: {
-                product: { select: { id: true, name: true } },
-                vendor: { select: { id:true, company_name: true } },
-                contractor: { select: { id: true, name: true } },
-                negotiations: {
-                    orderBy: {
-                        created_at: 'desc'
-                    },
-                    take: 1
-                }
-            },
-            orderBy: {
-                id: 'desc'
-            },
-            skip: (page - 1) * perPage,
-            take: perPage
-        });
-
-        const totalCount = await prisma.enquiry.count({ where: whereClause });
-
-        const enhancedEnquiries = enquiries.map(enquiry => {
-            const latestNegotiation = enquiry.negotiations[0];
-
-            return {
-                id: enquiry.id,
-                enquiryId: enquiry.enquiry_id,
-                product: enquiry.product.name,
-                contractorName: enquiry.contractor.name,
-                quantity: enquiry.quantity,
-                proposedPrice: latestNegotiation ? latestNegotiation.price_from_vendor ?  latestNegotiation.price_from_vendor : latestNegotiation.price_from_contractor : null, 
-                status: latestNegotiation ? latestNegotiation.status : 'Pending',
-                vendor: enquiry.vendor
-            };
-        });
-
-        return {
-            data: enhancedEnquiries,
-            meta: {
-                total: totalCount,
-                lastPage: Math.ceil(totalCount / perPage),
-                currentPage: page,
-                perPage: perPage,
-                prev: page > 1 ? page - 1 : null,
-                next: page < Math.ceil(totalCount / perPage) ? page + 1 : null
-            }
-        };
-    } catch (error) {
-        console.error(error);
-        throw new Error('Error fetching enquiries');
-    } */
 
     try {
         let page = query.page || 1;
@@ -189,8 +114,30 @@ const updateNegotiation = async (id, body) => {
     }
 }
 
+const getContractors = async (user) => {
+    try {
+        const contractors = await prisma.enquiry.findMany({
+            where: {
+              vendor_id: user.vendor.id
+            },
+            select : {
+                contractor: {
+                    select : {
+                        name: true
+                    }
+                }
+            }
+          });
+        return contractors;
+    } catch (err) {
+        console.log(err);
+        throw ({ status: 403, message: "Sorry, Something went wrong!!!" });
+    }
+}
+
 module.exports = {
     createEnquiry,
     getEnquiries,
-    updateNegotiation
+    updateNegotiation,
+    getContractors
 }
