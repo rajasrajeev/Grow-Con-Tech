@@ -67,16 +67,16 @@ const getEnquiries = async (vendor_id, query) => {
         };
 
         if (status) {
-            whereClause.AND.push({ negotiations :{ status: status }});
+            whereClause.AND.push({ negotiations: { status: status } });
         }
         if (contractor) {
-            whereClause.AND.push({contractor: { name: contractor }});
+            whereClause.AND.push({ contractor: { name: contractor } });
         }
         const enquiry = await paginate(prisma.enquiry, {
             where: whereClause,
             include: {
                 product: { select: { id: true, name: true } },
-                vendor: { select: { id:true, company_name: true } },
+                vendor: { select: { id: true, company_name: true } },
                 contractor: { select: { id: true, name: true } },
                 negotiations: {
                     orderBy: {
@@ -88,14 +88,14 @@ const getEnquiries = async (vendor_id, query) => {
             orderBy: {
                 id: 'desc'
             },
-        }, 
-        { page: page, perPage: perPage });
+        },
+            { page: page, perPage: perPage });
 
         return enquiry;
 
     } catch (err) {
         console.error(err);
-        throw ({status: 500, message: "Cannot get enquiries"});
+        throw ({ status: 500, message: "Cannot get enquiries" });
     }
 };
 
@@ -116,23 +116,30 @@ const updateNegotiation = async (id, body) => {
 
 const getContractors = async (user) => {
     try {
+    
         const contractors = await prisma.enquiry.findMany({
             where: {
-              vendor_id: user.vendor.id
+                vendor_id: user.vendor.id
             },
-            select : {
+            select: {
                 contractor: {
-                    select : {
+                    select: {
                         name: true
                     }
                 }
             }
-          });
-        return contractors;
+        });
+    
+        const contractorNames = contractors.map(enquiry => ({
+            name: enquiry.contractor.name
+        }));
+    
+        return contractorNames;
     } catch (err) {
         console.log(err);
-        throw ({ status: 403, message: "Sorry, Something went wrong!!!" });
+        throw { status: 403, message: "Sorry, something went wrong!!!" };
     }
+    
 }
 
 module.exports = {
