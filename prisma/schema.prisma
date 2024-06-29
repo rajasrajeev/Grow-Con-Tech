@@ -51,7 +51,6 @@ model Vendor {
   requested_on DateTime      @default(now())
   products     Product[]
   status       AccountStatus
-  negotiations Negotiation[]
   Enquiry      Enquiry[]
 }
 
@@ -69,7 +68,6 @@ model Contractor {
   created_at    DateTime      @default(now())
   updated_at    DateTime      @updatedAt
   status        AccountStatus
-  negotiations  Negotiation[]
   Enquiry       Enquiry[]
 }
 
@@ -112,7 +110,6 @@ model Product {
   unit_id       Int
   unit          Unit          @relation(fields: [unit_id], references: [id])
   dailyRates    DailyRate[]
-  negotiations  Negotiation[]
   Enquiry       Enquiry[]
 }
 
@@ -183,12 +180,6 @@ model Negotiation {
   created_at            DateTime          @default(now())
   updated_at            DateTime          @updatedAt
   enquiry               Enquiry           @relation(fields: [enquiry_id], references: [id])
-  Vendor                Vendor?           @relation(fields: [vendorId], references: [id])
-  vendorId              Int?
-  Contractor            Contractor?       @relation(fields: [contractorId], references: [id])
-  contractorId          Int?
-  Product               Product?          @relation(fields: [productId], references: [id])
-  productId             Int?
 }
 
 enum UserRole {
