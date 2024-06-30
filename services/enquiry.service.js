@@ -67,11 +67,40 @@ const getEnquiries = async (vendor_id, query) => {
         };
 
         if (status) {
-            whereClause.AND.push({ negotiations: { status: status } });
+            if(status === 'PENDING') {
+                whereClause.AND.push({
+                    negotiations: {
+                        some: {
+                            status: 'REPLIED',
+                            price_from_vendor: null
+                        }
+                    }
+                });
+            } else if (status === 'REPLIED') {
+                whereClause.AND.push({
+                    negotiations: {
+                        some: {
+                            status: 'REPLIED',
+                            price_from_vendor: {not: null}
+                        }
+                    }
+                });
+            } else  {
+                whereClause.AND.push({
+                    negotiations: {
+                        some: { status: status }
+                    }
+                });
+            }
         }
+
         if (contractor) {
-            whereClause.AND.push({ contractor: { name: contractor } });
+            whereClause = {
+                ...whereClause,
+                AND: { contractor: { name: contractor}}
+            };
         }
+
         const enquiry = await paginate(prisma.enquiry, {
             where: whereClause,
             include: {
