@@ -204,6 +204,7 @@ const getEnquiryDetails = async (id, user) => {
                         product_image: true, 
                         category: true,
                         grade: true, 
+                        unit: true,
                         dailyRates: {
                             orderBy: {
                                 created_at: 'desc'
