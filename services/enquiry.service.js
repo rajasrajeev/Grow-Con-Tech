@@ -131,8 +131,8 @@ const updateNegotiation = async (id, body, user) => {
     try {
         if (user.role == "VENDOR") {
             var data = {}
-            if (body.price_from_vendor) {
-                data.price_from_vendor = body.price_from_vendor
+            if (parseFloat(body.price_from_vendor)) {
+                data.price_from_vendor = parseFloat(body.price_from_vendor)
             }
             if (body.status) {
                 data.status = body.status
@@ -145,7 +145,7 @@ const updateNegotiation = async (id, body, user) => {
             return await prisma.negotiation.create({
                 data: {
                     id: id,
-                    price_from_contractor: body.price_from_contractor,
+                    price_from_contractor: parseFloat(body.price_from_contractor),
                     status: "REPLIED"
                 }
             });
