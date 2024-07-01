@@ -66,6 +66,12 @@ const getEnquiries = async (vendor_id, query) => {
             ]
         };
 
+        if (contractor) {
+            whereClause.AND.push({
+                contractor: { name: contractor }
+            });
+        }
+
         if (status) {
             if(status === 'PENDING') {
                 whereClause.AND.push({
@@ -92,13 +98,6 @@ const getEnquiries = async (vendor_id, query) => {
                     }
                 });
             }
-        }
-
-        if (contractor) {
-            whereClause = {
-                ...whereClause,
-                AND: { contractor: { name: contractor}}
-            };
         }
 
         const enquiry = await paginate(prisma.enquiry, {
