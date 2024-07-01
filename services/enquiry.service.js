@@ -143,7 +143,7 @@ const updateNegotiation = async (id, body, user) => {
         } else if( user.role == "CONTRACTOR") {
             return await prisma.negotiation.create({
                 data: {
-                    enquiry_id: id,
+                    id: id,
                     price_from_contractor: body.price_from_contractor,
                     status: "REPLIED"
                 }
@@ -193,7 +193,7 @@ const getEnquiryDetails = async (id, user) => {
     try {
         const enquires = await prisma.enquiry.findFirst({
             where: {
-                id: id,
+                enquiry_id: id,
                 vendor_id: user.vendor.id
             },
             include: {
