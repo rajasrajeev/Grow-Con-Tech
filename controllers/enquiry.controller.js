@@ -43,7 +43,7 @@ const getContractorsHandler = async (req, res, next) => {
 
 const getEnquiryDetailsHandler = async (req, res, next) => {
     try {
-        const data = await getEnquiryDetails(parseInt(req.params.id), req.user);
+        const data = await getEnquiryDetails(req.params.id, req.user);
         return res.status(200).send(data);
     } catch(err) {
         next(err);
