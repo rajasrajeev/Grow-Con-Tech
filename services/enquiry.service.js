@@ -22,7 +22,7 @@ const createEnquiry = async (user, body) => {
                 quantity: body.quantity,
                 negotiations: {
                     create: {
-                        price_from_contractor: parseInt(body.price_from_contractor, 10),
+                        price_from_contractor: parseFloat(body.price_from_contractor, 10),
                         status: 'REPLIED'
                     }
                 }
@@ -73,7 +73,7 @@ const getEnquiries = async (vendor_id, query) => {
         }
 
         if (status) {
-            if(status === 'PENDING') {
+            if (status === 'PENDING') {
                 whereClause.AND.push({
                     negotiations: {
                         some: {
@@ -87,11 +87,11 @@ const getEnquiries = async (vendor_id, query) => {
                     negotiations: {
                         some: {
                             status: 'REPLIED',
-                            price_from_vendor: {not: null}
+                            price_from_vendor: { not: null }
                         }
                     }
                 });
-            } else  {
+            } else {
                 whereClause.AND.push({
                     negotiations: {
                         some: { status: status }
@@ -129,18 +129,18 @@ const getEnquiries = async (vendor_id, query) => {
 
 const updateNegotiation = async (id, body, user) => {
     try {
-        if(user.role == "VENDOR") {
+        if (user.role == "VENDOR") {
             var data = {
                 price_from_vendor: body.price_from_vendor
             }
-            if(body.status) {
+            if (body.status) {
                 data.status = body.status
             }
             return await prisma.negotiation.update({
                 where: { id: id },
                 data: data
             });
-        } else if( user.role == "CONTRACTOR") {
+        } else if (user.role == "CONTRACTOR") {
             return await prisma.negotiation.create({
                 data: {
                     id: id,
@@ -152,7 +152,7 @@ const updateNegotiation = async (id, body, user) => {
             console.error(err);
             throw ({ status: 404, message: "Access Denied!!!" });
         }
-        
+
 
     } catch (err) {
         console.log(err);
@@ -162,7 +162,7 @@ const updateNegotiation = async (id, body, user) => {
 
 const getContractors = async (user) => {
     try {
-    
+
         const contractors = await prisma.enquiry.findMany({
             where: {
                 vendor_id: user.vendor.id
@@ -176,17 +176,17 @@ const getContractors = async (user) => {
             },
             distinct: ['contractor_id']
         });
-    
+
         const contractorNames = contractors.map(enquiry => ({
             name: enquiry.contractor.name
         }));
-    
+
         return contractorNames;
     } catch (err) {
         console.log(err);
         throw { status: 403, message: "Sorry, something went wrong!!!" };
     }
-    
+
 }
 
 const getEnquiryDetails = async (id, user) => {
@@ -197,7 +197,21 @@ const getEnquiryDetails = async (id, user) => {
                 vendor_id: user.vendor.id
             },
             include: {
-                product: { select: { id: true, name: true } },
+                product: {
+                    select: {
+                        id: true, 
+                        name: true, 
+                        product_image: true, 
+                        category: true,
+                        grade: true, 
+                        dailyRates: {
+                            orderBy: {
+                                created_at: 'desc'
+                            },
+                            take: 1
+                        }
+                    }
+                },
                 vendor: { select: { id: true, company_name: true } },
                 contractor: { select: { id: true, name: true } },
                 negotiations: {
