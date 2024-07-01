@@ -189,11 +189,12 @@ const getContractors = async (user) => {
     
 }
 
-const getEnquiryDetails = async (id) => {
+const getEnquiryDetails = async (id, user) => {
     try {
         const enquires = await prisma.enquiry.findFirst({
             where: {
                 id: id,
+                vendor_id: user.vendor.id
             },
             include: {
                 product: { select: { id: true, name: true } },
