@@ -130,8 +130,9 @@ const getEnquiries = async (vendor_id, query) => {
 const updateNegotiation = async (id, body, user) => {
     try {
         if (user.role == "VENDOR") {
-            var data = {
-                price_from_vendor: body.price_from_vendor
+            var data = {}
+            if (body.status) {
+                data.price_from_vendor = body.price_from_vendor
             }
             if (body.status) {
                 data.status = body.status
