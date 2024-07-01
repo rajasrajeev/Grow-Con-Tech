@@ -131,7 +131,7 @@ const updateNegotiation = async (id, body, user) => {
     try {
         if (user.role == "VENDOR") {
             var data = {}
-            if (body.status) {
+            if (body.price_from_vendor) {
                 data.price_from_vendor = body.price_from_vendor
             }
             if (body.status) {
