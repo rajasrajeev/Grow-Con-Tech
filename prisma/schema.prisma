@@ -173,7 +173,7 @@ model Enquiry {
 
 model Negotiation {
   id                    Int               @id @default(autoincrement())
-  enquiry_id            Int               @unique
+  enquiry_id            Int               
   price_from_contractor Float
   price_from_vendor     Float?
   status                NegotiationStatus @default(REPLIED)

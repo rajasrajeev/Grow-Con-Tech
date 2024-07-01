@@ -128,14 +128,32 @@ const getEnquiries = async (vendor_id, query) => {
     }
 };
 
-const updateNegotiation = async (id, body) => {
+const updateNegotiation = async (id, body, user) => {
     try {
-        return await prisma.negotiation.update({
-            where: { id: id },
-            data: {
+        if(user.role == "VENDOR") {
+            var data = {
                 price_from_vendor: body.price_from_vendor
             }
-        });
+            if(body.status) {
+                data.status = body.status
+            }
+            return await prisma.negotiation.update({
+                where: { id: id },
+                data: data
+            });
+        } else if( user.role == "CONTRACTOR") {
+            return await prisma.negotiation.create({
+                data: {
+                    enquiry_id: id,
+                    price_from_contractor: body.price_from_contractor,
+                    status: "REPLIED"
+                }
+            });
+        } else {
+            console.error(err);
+            throw ({ status: 404, message: "Access Denied!!!" });
+        }
+        
 
     } catch (err) {
         console.log(err);
@@ -172,9 +190,38 @@ const getContractors = async (user) => {
     
 }
 
+const getEnquiryDetails = async (id) => {
+    try {
+        const enquires = await prisma.enquiry.findFirst({
+            where: {
+                id: id,
+            },
+            include: {
+                product: { select: { id: true, name: true } },
+                vendor: { select: { id: true, company_name: true } },
+                contractor: { select: { id: true, name: true } },
+                negotiations: {
+                    orderBy: {
+                        created_at: 'desc'
+                    }
+                }
+            },
+            orderBy: {
+                id: 'desc'
+            },
+        });
+        return enquires;
+    } catch (error) {
+        console.log(error);
+        throw { status: 403, message: "Sorry, something went wrong!!!" };
+    }
+}
+
+
 module.exports = {
     createEnquiry,
     getEnquiries,
     updateNegotiation,
-    getContractors
+    getContractors,
+    getEnquiryDetails
 }

@@ -1,6 +1,6 @@
 const { createEnquiry, 
     getEnquiries,
-    updateNegotiation, getContractors } = require('../services/enquiry.service');
+    updateNegotiation, getContractors, getEnquiryDetails } = require('../services/enquiry.service');
 
 
 const createEnquiryHandler = async (req, res, next) => {
@@ -25,7 +25,7 @@ const getEnquiriesHandler = async (req, res, next) => {
 
 const updateNegotiationHandler = async (req, res, next) => {
     try {
-        const data = await updateNegotiation(parseInt(req.params.id), req.body);
+        const data = await updateNegotiation(parseInt(req.params.id), req.body, req.user);
         return res.status(200).send(data);
     } catch(err) {
         next(err);
@@ -41,10 +41,20 @@ const getContractorsHandler = async (req, res, next) => {
     }
 }
 
+const getEnquiryDetailsHandler = async (req, res, next) => {
+    try {
+        const data = await getEnquiryDetails(parseInt(req.params.id));
+        return res.status(200).send(data);
+    } catch(err) {
+        next(err);
+    }
+}
+
 
 module.exports = {
     createEnquiryHandler,
     getEnquiriesHandler,
     updateNegotiationHandler,
-    getContractorsHandler
+    getContractorsHandler,
+    getEnquiryDetailsHandler
 }
