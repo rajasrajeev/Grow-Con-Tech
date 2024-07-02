@@ -23,7 +23,7 @@ const createEnquiry = async (user, body) => {
                 negotiations: {
                     create: {
                         price_from_contractor: parseFloat(body.price_from_contractor, 10),
-                        status: 'REPLIED'
+                        status_from_contractor: 'REPLIED'
                     }
                 }
             },
@@ -77,7 +77,7 @@ const getEnquiries = async (vendor_id, query) => {
                 whereClause.AND.push({
                     negotiations: {
                         some: {
-                            status: 'REPLIED',
+                            status_from_vendor: 'PENDING',
                             price_from_vendor: null
                         }
                     }
@@ -86,7 +86,7 @@ const getEnquiries = async (vendor_id, query) => {
                 whereClause.AND.push({
                     negotiations: {
                         some: {
-                            status: 'REPLIED',
+                            status_from_vendor: 'REPLIED',
                             price_from_vendor: { not: null }
                         }
                     }
@@ -94,7 +94,7 @@ const getEnquiries = async (vendor_id, query) => {
             } else {
                 whereClause.AND.push({
                     negotiations: {
-                        some: { status: status }
+                        some: { status_from_vendor: status }
                     }
                 });
             }
@@ -135,7 +135,7 @@ const updateNegotiation = async (id, body, user) => {
                 data.price_from_vendor = parseFloat(body.price_from_vendor)
             }
             if (body.status) {
-                data.status = body.status
+                data.status_from_vendor = body.status
             }
             return await prisma.negotiation.update({
                 where: { id: id },
@@ -146,7 +146,7 @@ const updateNegotiation = async (id, body, user) => {
                 data: {
                     id: id,
                     price_from_contractor: parseFloat(body.price_from_contractor),
-                    status: "REPLIED"
+                    status_from_contractor: "REPLIED"
                 }
             });
         } else {

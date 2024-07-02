@@ -176,7 +176,8 @@ model Negotiation {
   enquiry_id            Int               
   price_from_contractor Float
   price_from_vendor     Float?
-  status                NegotiationStatus @default(REPLIED)
+  status_from_contractor                  NegotiationStatus @default(REPLIED)
+  status_from_vendor                      NegotiationStatus @default(PENDING)
   created_at            DateTime          @default(now())
   updated_at            DateTime          @updatedAt
   enquiry               Enquiry           @relation(fields: [enquiry_id], references: [id])
@@ -199,4 +200,5 @@ enum NegotiationStatus {
   ACCEPTED
   REJECTED
   REPLIED
+  PENDING
 }
