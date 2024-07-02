@@ -137,6 +137,19 @@ const updateNegotiation = async (id, body, user) => {
             if (body.status) {
                 data.status_from_vendor = body.status
             }
+            var negotiation = await prisma.negotiation.findFirst({
+                where: {
+                    id: id
+                }
+            })
+            var enquiry = await prisma.enquiry.update({
+                where: {
+                    id: negotiation.enquiry_id
+                },
+                data: {
+                    is_read: true
+                }
+            })
             return await prisma.negotiation.update({
                 where: { id: id },
                 data: data
