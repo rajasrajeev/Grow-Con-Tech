@@ -133,6 +133,8 @@ const updateNegotiation = async (id, body, user) => {
             var data = {}
             if (parseFloat(body.price_from_vendor)) {
                 data.price_from_vendor = parseFloat(body.price_from_vendor)
+                data.status_from_vendor = "REPLIED"
+                data.status_from_contractor = "PENDING"
             }
             if (body.status) {
                 data.status_from_vendor = body.status
@@ -159,7 +161,8 @@ const updateNegotiation = async (id, body, user) => {
                 data: {
                     id: id,
                     price_from_contractor: parseFloat(body.price_from_contractor),
-                    status_from_contractor: "REPLIED"
+                    status_from_contractor: "REPLIED",
+                    status_from_vendor: "PENDING"
                 }
             });
         } else {
