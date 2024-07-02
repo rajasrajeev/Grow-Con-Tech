@@ -103,7 +103,7 @@ const getEnquiries = async (vendor_id, query) => {
         const enquiry = await paginate(prisma.enquiry, {
             where: whereClause,
             include: {
-                product: { select: { id: true, name: true } },
+                product: { select: { id: true, name: true, unit: true } },
                 vendor: { select: { id: true, company_name: true } },
                 contractor: { select: { id: true, name: true } },
                 negotiations: {
