@@ -215,7 +215,7 @@ const updateNegotiation = async (id, body, user) => {
             } else {
                 return await prisma.negotiation.create({
                     data: {
-                        id: id,
+                        enquiry_id: id,
                         price_from_contractor: parseFloat(body.price_from_contractor),
                         status_from_contractor: "REPLIED",
                         status_from_vendor: "PENDING"
