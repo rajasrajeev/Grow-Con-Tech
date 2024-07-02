@@ -52,6 +52,7 @@ model Vendor {
   products     Product[]
   status       AccountStatus
   Enquiry      Enquiry[]
+  Order        Order[]
 }
 
 model Contractor {
@@ -69,6 +70,7 @@ model Contractor {
   updated_at    DateTime      @updatedAt
   status        AccountStatus
   Enquiry       Enquiry[]
+  Order         Order[]
 }
 
 model Warehouse {
@@ -111,6 +113,7 @@ model Product {
   unit          Unit          @relation(fields: [unit_id], references: [id])
   dailyRates    DailyRate[]
   Enquiry       Enquiry[]
+  Order         Order[]
 }
 
 model Category {
@@ -183,6 +186,22 @@ model Negotiation {
   enquiry               Enquiry           @relation(fields: [enquiry_id], references: [id])
 }
 
+model Order {
+  id         Int      @id @default(autoincrement())
+  order_id   String   @unique
+  product_id Int
+  product       Product       @relation(fields: [product_id], references: [id])
+  vendor_id  Int
+  vendor        Vendor        @relation(fields: [vendor_id], references: [id])
+  proposed_price Float
+  contractor_id Int
+  contractor    Contractor    @relation(fields: [contractor_id], references: [id])
+  status        OrderStatus   @default(ACCEPTED)
+  delivered_on  DateTime?
+  created_at        DateTime? @default(now())
+  updated_at        DateTime? @updatedAt
+}
+
 enum UserRole {
   VENDOR
   CONTRACTOR
@@ -200,5 +219,10 @@ enum NegotiationStatus {
   ACCEPTED
   REJECTED
   REPLIED
+  PENDING
+}
+enum OrderStatus {
+  ACCEPTED
+  COMPLETED
   PENDING
 }

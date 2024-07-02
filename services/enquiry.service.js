@@ -152,19 +152,77 @@ const updateNegotiation = async (id, body, user) => {
                     is_read: true
                 }
             })
+            if(body.status == "ACCEPTED") {
+                var order = await prisma.order.create({
+                    data: {
+                        order_id: "OID",
+                        product_id: enquiry.product_id,
+                        vendor_id: enquiry.vendor_id,
+                        contractor_id: enquiry.contractor_id,
+                        proposed_price: negotiation.price_from_contractor,
+                        status: "ACCEPTED",
+                    }
+                });
+
+                const order_id = `OID${1000 + order.id}`;
+
+                const updatedOrder = await prisma.order.update({
+                    where: { id: order.id },
+                    data: { order_id }
+                });
+            }
             return await prisma.negotiation.update({
                 where: { id: id },
                 data: data
             });
         } else if (user.role == "CONTRACTOR") {
-            return await prisma.negotiation.create({
-                data: {
-                    id: id,
-                    price_from_contractor: parseFloat(body.price_from_contractor),
-                    status_from_contractor: "REPLIED",
-                    status_from_vendor: "PENDING"
+            var negotiation = await prisma.negotiation.findFirst({
+                where: {
+                    id: id
                 }
-            });
+            })
+            var enquiry = await prisma.enquiry.findFirst({
+                where: {
+                    id: negotiation.enquiry_id
+                }
+            })
+            if(body.status == "ACCEPTED") {
+                var order = await prisma.order.create({
+                    data: {
+                        order_id: "OID",
+                        product_id: enquiry.product_id,
+                        vendor_id: enquiry.vendor_id,
+                        contractor_id: enquiry.contractor_id,
+                        proposed_price: negotiation.price_from_vendor,
+                        status: "ACCEPTED",
+                    }
+                });
+
+                const order_id = `OID${1000 + order.id}`;
+
+                const updatedOrder = await prisma.order.update({
+                    where: { id: order.id },
+                    data: { order_id }
+                });
+                return await prisma.negotiation.update({
+                    where: {
+                        id: id
+                    },
+                    data: {
+                        status_from_contractor: "ACCEPTED"
+                    }
+                });
+            } else {
+                return await prisma.negotiation.create({
+                    data: {
+                        id: id,
+                        price_from_contractor: parseFloat(body.price_from_contractor),
+                        status_from_contractor: "REPLIED",
+                        status_from_vendor: "PENDING"
+                    }
+                });
+            }
+            return enquiry;
         } else {
             console.error(err);
             throw ({ status: 404, message: "Access Denied!!!" });
