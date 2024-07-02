@@ -191,6 +191,7 @@ model Order {
   order_id   String   @unique
   product_id Int
   product       Product       @relation(fields: [product_id], references: [id])
+  quantity      Int           @default(0)
   vendor_id  Int
   vendor        Vendor        @relation(fields: [vendor_id], references: [id])
   proposed_price Float

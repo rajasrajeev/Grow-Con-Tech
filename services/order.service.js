@@ -40,7 +40,7 @@ const getOrders = async (query, user) => {
         const order = await paginate(prisma.order, {
             where: whereClause,
             include: {
-                product: { select: { id: true, name: true } },
+                product: { select: { id: true, name: true, unit: true } },
                 vendor: { select: { id: true, company_name: true } },
                 contractor: { select: { id: true, name: true } }
             },
@@ -58,9 +58,48 @@ const getOrders = async (query, user) => {
     }
 };
 
+const getOrderDetails = async (id, user) => {
+    try {
+        const order = await prisma.order.findFirst({
+            where: {
+                order_id: id,
+                vendor_id: user.vendor.id
+            },
+            include: {
+                product: {
+                    select: {
+                        id: true, 
+                        name: true, 
+                        product_image: true, 
+                        category: true,
+                        grade: true, 
+                        unit: true,
+                        dailyRates: {
+                            orderBy: {
+                                created_at: 'desc'
+                            },
+                            take: 1
+                        }
+                    }
+                },
+                vendor: { select: { id: true, company_name: true } },
+                contractor: { select: { id: true, name: true } }
+            },
+            orderBy: {
+                id: 'desc'
+            },
+        });
+        return order;
+    } catch (error) {
+        console.log(error);
+        throw { status: 403, message: "Sorry, something went wrong!!!" };
+    }
+}
+
 
 
 
 module.exports = {
-    getOrders
+    getOrders,
+    getOrderDetails
 }
