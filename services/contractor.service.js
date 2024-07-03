@@ -53,12 +53,89 @@ const getContractors = async (query) => {
     }
 }
 
+const getContractorForVendor = async (user, query) => {
+    try {
+        let page = parseInt(query.page) || 1;
+        let perPage = parseInt(query.perPage) || 8;
+        let search = query.search || '';
+        let filter = query.filter || ''; 
+
+        let whereClause = {
+            OR: [
+                { contractor_id: { contains: search, mode: 'insensitive' } },
+                { company_name: { contains: search, mode: 'insensitive' } },
+                { email: { contains: search, mode: 'insensitive' } },
+                { phone: { contains: search, mode: 'insensitive' } }
+            ],
+            Order: {
+                some: {
+                    vendor_id: user.vendor.id
+                }
+            }
+        };
+
+        if (filter) {
+            whereClause.AND = { status: filter };
+        }
+
+        const contractors = await paginate(prisma.contractor, {
+            where: whereClause,
+            select: {
+                id: true,
+                contractor_id: true,
+                created_at: true,
+                company_name: true,
+                name: true,
+                phone: true,
+                email: true,
+                status: true
+            },
+            orderBy: {
+                id: 'desc'
+            }
+        }, 
+        { page: page, perPage: perPage });
+
+        return contractors;
+    } catch (err) {
+        console.error(err);
+        throw ({status: 500, message: "Cannot get Contractors"});
+    }
+}
+
 
 const getContractorDetail = async (id) => {
     try {
         const contractor = await prisma.contractor.findFirst({
             where: {
               contractor_id: id
+            }
+          });
+        return contractor;
+    } catch (err) {
+        console.error(err);
+        throw ({status: 500, message: "Cannot get Detail"});
+    }
+}
+const getContractorDetailForVendor = async (id) => {
+    try {
+        const contractor = await prisma.contractor.findFirst({
+            where: {
+              contractor_id: id
+            },
+            include: {
+                Order: {
+                    where: {
+                        status: {
+                            not: 'COMPLETED'
+                        }
+                    },
+                    include: {
+                        product: true, // Include product details in orders
+                        vendor: true   // Include vendor details in orders
+                    }
+                },
+                user: true // Include related user details if needed
             }
           });
         return contractor;
@@ -100,5 +177,7 @@ const updateContractorStatus = async (id, body) => {
 module.exports = {
     getContractors,
     getContractorDetail,
-    updateContractorStatus
+    updateContractorStatus,
+    getContractorForVendor,
+    getContractorDetailForVendor
 }

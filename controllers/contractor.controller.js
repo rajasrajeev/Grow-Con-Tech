@@ -1,6 +1,10 @@
-const { getContractors, 
-    getContractorDetail,
-    updateContractorStatus } = require('../services/contractor.service');
+const { 
+        getContractors, 
+        getContractorDetail,
+        updateContractorStatus,
+        getContractorForVendor,
+        getContractorDetailForVendor 
+    } = require('../services/contractor.service');
 
 
 const contractorListHandler = async (req, res, next) => {
@@ -11,11 +15,27 @@ const contractorListHandler = async (req, res, next) => {
         next(err);
     }
 }
+const getContractorForVendorHandler = async (req, res, next) => {
+    try {
+        const data = await getContractorForVendor(req.user, req.query);
+        return res.status(200).send(data);
+    } catch(err) {
+        next(err);
+    }
+}
 
 
 const contractorDetailHandler = async (req, res, next) => {
     try {
         const data = await getContractorDetail(req.params.id);
+        return res.status(200).send(data);
+    } catch(err) {
+        next(err);
+    }
+}
+const getContractorDetailForVendorHandler = async (req, res, next) => {
+    try {
+        const data = await getContractorDetailForVendor(req.params.id);
         return res.status(200).send(data);
     } catch(err) {
         next(err);
@@ -36,5 +56,7 @@ const contractorStatusHandler = async (req, res, next) => {
 module.exports = {
     contractorListHandler,
     contractorDetailHandler,
-    contractorStatusHandler
+    contractorStatusHandler,
+    getContractorForVendorHandler,
+    getContractorDetailForVendorHandler
 }
