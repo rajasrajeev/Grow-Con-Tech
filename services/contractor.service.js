@@ -117,6 +117,8 @@ const getContractorDetail = async (id) => {
         throw ({status: 500, message: "Cannot get Detail"});
     }
 }
+
+
 const getContractorDetailForVendor = async (id) => {
     try {
         const contractor = await prisma.contractor.findFirst({
@@ -142,6 +144,124 @@ const getContractorDetailForVendor = async (id) => {
     } catch (err) {
         console.error(err);
         throw ({status: 500, message: "Cannot get Detail"});
+    }
+}
+
+
+const getOrderListOngoingFromContractor = async (user, query) => {
+    try {
+        let page = parseInt(query.page) || 1;
+        let perPage = parseInt(query.perPage) || 8;
+        let search = query.search || '';
+        let filter = query.filter || ''; 
+
+        let whereClause = {
+            OR: [
+                { contractor_id: { contains: search, mode: 'insensitive' } },
+                { company_name: { contains: search, mode: 'insensitive' } },
+                { email: { contains: search, mode: 'insensitive' } },
+                { phone: { contains: search, mode: 'insensitive' } }
+            ],
+            Order: {
+                some: {
+                    vendor_id: user.vendor.id,
+                    status: {
+                        not: 'COMPLETED'
+                    }
+                },
+                
+            }
+        };
+
+        if (filter) {
+            whereClause.AND = { status: filter };
+        }
+
+        const contractors = await paginate(prisma.contractor, {
+            where: whereClause,
+            select: {
+                id: true,
+                contractor_id: true,
+                created_at: true,
+                company_name: true,
+                name: true,
+                phone: true,
+                email: true,
+                status: true,
+                Order: {
+                    select: {
+                        product: true,
+                        vendor: true
+                    }
+                }
+            },
+            orderBy: {
+                id: 'desc'
+            }
+        }, 
+        { page: page, perPage: perPage });
+
+        return contractors;
+    } catch (err) {
+        console.error(err);
+        throw ({status: 500, message: "Cannot get Contractors"});
+    }
+}
+const getOrderListPurchaseHistoryFromContractor = async (user, query) => {
+    try {
+        let page = parseInt(query.page) || 1;
+        let perPage = parseInt(query.perPage) || 8;
+        let search = query.search || '';
+        let filter = query.filter || ''; 
+
+        let whereClause = {
+            OR: [
+                { contractor_id: { contains: search, mode: 'insensitive' } },
+                { company_name: { contains: search, mode: 'insensitive' } },
+                { email: { contains: search, mode: 'insensitive' } },
+                { phone: { contains: search, mode: 'insensitive' } }
+            ],
+            Order: {
+                some: {
+                    vendor_id: user.vendor.id,
+                    status: 'COMPLETED'
+                },
+                
+            }
+        };
+
+        if (filter) {
+            whereClause.AND = { status: filter };
+        }
+
+        const contractors = await paginate(prisma.contractor, {
+            where: whereClause,
+            select: {
+                id: true,
+                contractor_id: true,
+                created_at: true,
+                company_name: true,
+                name: true,
+                phone: true,
+                email: true,
+                status: true,
+                Order: {
+                    select: {
+                        product: true,
+                        vendor: true
+                    }
+                }
+            },
+            orderBy: {
+                id: 'desc'
+            }
+        }, 
+        { page: page, perPage: perPage });
+
+        return contractors;
+    } catch (err) {
+        console.error(err);
+        throw ({status: 500, message: "Cannot get Contractors"});
     }
 }
 
@@ -179,5 +299,7 @@ module.exports = {
     getContractorDetail,
     updateContractorStatus,
     getContractorForVendor,
-    getContractorDetailForVendor
+    getContractorDetailForVendor,
+    getOrderListOngoingFromContractor,
+    getOrderListPurchaseHistoryFromContractor
 }

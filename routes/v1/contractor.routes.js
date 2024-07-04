@@ -4,7 +4,9 @@ const {
     contractorDetailHandler,
     contractorStatusHandler,
     getContractorForVendorHandler,
-    getContractorDetailForVendorHandler
+    getContractorDetailForVendorHandler,
+    getOrderListOngoingFromContractorHandler,
+    getOrderListPurchaseHistoryFromContractorHandler
 } = require('../../controllers/contractor.controller');
 const { userAuth, checkRole } = require('../../middlewares/auth.middleware');
 
@@ -12,6 +14,8 @@ const router = express.Router();
 
 
 module.exports = (app) => {
+    router.get('/for-vendor/purchase-history', userAuth, getOrderListPurchaseHistoryFromContractorHandler);
+    router.get('/for-vendor/ongoing', userAuth, getOrderListOngoingFromContractorHandler);
     router.get('/for-vendor/:id', userAuth, getContractorDetailForVendorHandler);
     router.get('/for-vendor', userAuth, getContractorForVendorHandler);
     router.get('/:id', userAuth, contractorDetailHandler);

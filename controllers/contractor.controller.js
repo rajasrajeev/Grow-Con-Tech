@@ -3,7 +3,9 @@ const {
         getContractorDetail,
         updateContractorStatus,
         getContractorForVendor,
-        getContractorDetailForVendor 
+        getContractorDetailForVendor,
+        getOrderListOngoingFromContractor,
+        getOrderListPurchaseHistoryFromContractor
     } = require('../services/contractor.service');
 
 
@@ -18,6 +20,22 @@ const contractorListHandler = async (req, res, next) => {
 const getContractorForVendorHandler = async (req, res, next) => {
     try {
         const data = await getContractorForVendor(req.user, req.query);
+        return res.status(200).send(data);
+    } catch(err) {
+        next(err);
+    }
+}
+const getOrderListOngoingFromContractorHandler = async (req, res, next) => {
+    try {
+        const data = await getOrderListOngoingFromContractor(req.user, req.query);
+        return res.status(200).send(data);
+    } catch(err) {
+        next(err);
+    }
+}
+const getOrderListPurchaseHistoryFromContractorHandler = async (req, res, next) => {
+    try {
+        const data = await getOrderListPurchaseHistoryFromContractor(req.user, req.query);
         return res.status(200).send(data);
     } catch(err) {
         next(err);
@@ -58,5 +76,7 @@ module.exports = {
     contractorDetailHandler,
     contractorStatusHandler,
     getContractorForVendorHandler,
-    getContractorDetailForVendorHandler
+    getContractorDetailForVendorHandler,
+    getOrderListOngoingFromContractorHandler,
+    getOrderListPurchaseHistoryFromContractorHandler
 }
