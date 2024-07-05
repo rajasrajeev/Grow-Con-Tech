@@ -181,7 +181,7 @@ const getOrderListOngoingFromContractor = async (user, query) => {
         
         } catch (err) {
             console.error(err);
-            throw { status: 500, message: "Cannot get enquiries" };
+            throw { status: 500, message: "Cannot get orders" };
         }
 }
 const getOrderListPurchaseHistoryFromContractor = async (user, query) => {
@@ -215,7 +215,7 @@ const getOrderListPurchaseHistoryFromContractor = async (user, query) => {
         
         } catch (err) {
             console.error(err);
-            throw { status: 500, message: "Cannot get enquiries" };
+            throw { status: 500, message: "Cannot get orders" };
         }
         
 }
