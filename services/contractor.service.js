@@ -133,11 +133,11 @@ const getContractorDetailForVendor = async (id) => {
                         }
                     },
                     include: {
-                        product: true, // Include product details in orders
-                        vendor: true   // Include vendor details in orders
+                        product: true,
+                        vendor: true
                     }
                 },
-                user: true // Include related user details if needed
+                user: true 
             }
           });
         return contractor;
@@ -149,122 +149,75 @@ const getContractorDetailForVendor = async (id) => {
 
 
 const getOrderListOngoingFromContractor = async (user, query) => {
-    try {
-        let page = parseInt(query.page) || 1;
-        let perPage = parseInt(query.perPage) || 8;
-        let search = query.search || '';
-        let filter = query.filter || ''; 
-
-        let whereClause = {
-            OR: [
-                { contractor_id: { contains: search, mode: 'insensitive' } },
-                { company_name: { contains: search, mode: 'insensitive' } },
-                { email: { contains: search, mode: 'insensitive' } },
-                { phone: { contains: search, mode: 'insensitive' } }
-            ],
-            Order: {
-                some: {
-                    vendor_id: user.vendor.id,
-                    contractor_id: parseInt(query.contractor_id),
-                    status: {
-                        not: 'COMPLETED'
-                    }
-                },
-                
-            }
-        };
-
-        if (filter) {
-            whereClause.AND = { status: filter };
-        }
-
-        const contractors = await paginate(prisma.contractor, {
-            where: whereClause,
-            select: {
-                id: true,
-                contractor_id: true,
-                created_at: true,
-                company_name: true,
-                name: true,
-                phone: true,
-                email: true,
-                status: true,
-                Order: {
-                    select: {
-                        order_id: true,
-                        product: { select: { id: true, name: true, unit: true, product_image: true } },
-                    }
+        try {
+            let page = parseInt(query.page) || 1;
+            let perPage = 8;
+            let filter = query.filter || '';
+        
+            let whereClause = {
+                vendor_id: user.vendor.id,
+                contractor_id: parseInt(query.contractor_id),
+                status: {
+                    not: 'COMPLETED'
                 }
-            },
-            orderBy: {
-                id: 'desc'
+            };
+        
+            if (filter) {
+                whereClause.status = filter;
             }
-        }, 
-        { page: page, perPage: perPage });
-
-        return contractors;
-    } catch (err) {
-        console.error(err);
-        throw ({status: 500, message: "Cannot get Contractors"});
-    }
+        
+            const enquiry = await paginate(prisma.order, {
+                where: whereClause,
+                include: {
+                    product: { select: { id: true, name: true, unit: true, product_image: true } },
+                },
+                orderBy: {
+                    id: 'desc'
+                },
+            },
+            { page: page, perPage: perPage });
+        
+            return enquiry;
+        
+        } catch (err) {
+            console.error(err);
+            throw { status: 500, message: "Cannot get enquiries" };
+        }
 }
 const getOrderListPurchaseHistoryFromContractor = async (user, query) => {
-    try {
-        let page = parseInt(query.page) || 1;
-        let perPage = parseInt(query.perPage) || 8;
-        let search = query.search || '';
-        let filter = query.filter || ''; 
-
-        let whereClause = {
-            OR: [
-                { contractor_id: { contains: search, mode: 'insensitive' } },
-                { company_name: { contains: search, mode: 'insensitive' } },
-                { email: { contains: search, mode: 'insensitive' } },
-                { phone: { contains: search, mode: 'insensitive' } }
-            ],
-            Order: {
-                some: {
-                    vendor_id: user.vendor.id,
-                    contractor_id: parseInt(query.contractor_id),
-                    status: 'COMPLETED'
+        try {
+            let page = parseInt(query.page) || 1;
+            let perPage = 8;
+            let filter = query.filter || '';
+        
+            let whereClause = {
+                vendor_id: user.vendor.id,
+                contractor_id: parseInt(query.contractor_id),
+                status: "COMPLETED"
+            };
+        
+            if (filter) {
+                whereClause.status = filter;
+            }
+        
+            const enquiry = await paginate(prisma.order, {
+                where: whereClause,
+                include: {
+                    product: { select: { id: true, name: true, unit: true, product_image: true } },
                 },
-                
-            }
-        };
-
-        if (filter) {
-            whereClause.AND = { status: filter };
-        }
-
-        const contractors = await paginate(prisma.contractor, {
-            where: whereClause,
-            select: {
-                id: true,
-                contractor_id: true,
-                created_at: true,
-                company_name: true,
-                name: true,
-                phone: true,
-                email: true,
-                status: true,
-                Order: {
-                    select: {
-                        order_id: true,
-                        product: { select: { id: true, name: true, unit: true, product_image: true } },
-                    }
-                }
+                orderBy: {
+                    id: 'desc'
+                },
             },
-            orderBy: {
-                id: 'desc'
-            }
-        }, 
-        { page: page, perPage: perPage });
-
-        return contractors;
-    } catch (err) {
-        console.error(err);
-        throw ({status: 500, message: "Cannot get Contractors"});
-    }
+            { page: page, perPage: perPage });
+        
+            return enquiry;
+        
+        } catch (err) {
+            console.error(err);
+            throw { status: 500, message: "Cannot get enquiries" };
+        }
+        
 }
 
 
