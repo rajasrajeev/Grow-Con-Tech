@@ -165,6 +165,7 @@ const getOrderListOngoingFromContractor = async (user, query) => {
             Order: {
                 some: {
                     vendor_id: user.vendor.id,
+                    contractor_id: parseInt(query.contractor_id),
                     status: {
                         not: 'COMPLETED'
                     }
@@ -190,8 +191,8 @@ const getOrderListOngoingFromContractor = async (user, query) => {
                 status: true,
                 Order: {
                     select: {
-                        product: true,
-                        vendor: true
+                        order_id: true,
+                        product: { select: { id: true, name: true, unit: true, product_image: true } },
                     }
                 }
             },
@@ -224,6 +225,7 @@ const getOrderListPurchaseHistoryFromContractor = async (user, query) => {
             Order: {
                 some: {
                     vendor_id: user.vendor.id,
+                    contractor_id: parseInt(query.contractor_id),
                     status: 'COMPLETED'
                 },
                 
@@ -247,8 +249,8 @@ const getOrderListPurchaseHistoryFromContractor = async (user, query) => {
                 status: true,
                 Order: {
                     select: {
-                        product: true,
-                        vendor: true
+                        order_id: true,
+                        product: { select: { id: true, name: true, unit: true, product_image: true } },
                     }
                 }
             },
