@@ -133,7 +133,6 @@ const updateCreditLimit = async (body, id, user) => {
         });
 
         let creditLimit;
-        console.log(existingCreditLimit);
         if (existingCreditLimit) {
             creditLimit = await prisma.credit.update({
                 where: {
@@ -143,7 +142,6 @@ const updateCreditLimit = async (body, id, user) => {
                     amount: existingCreditLimit.amount+body.amount
                 }
             });
-            console.log(creditLimit)
         } else {
             creditLimit = await prisma.credit.create({
                 data: {
@@ -156,7 +154,6 @@ const updateCreditLimit = async (body, id, user) => {
                     amount: body.amount
                 }
             });
-            console.log(creditLimit)
         }
 
         return creditLimit;
