@@ -58,7 +58,7 @@ const getContractorForVendor = async (user, query) => {
         let page = parseInt(query.page) || 1;
         let perPage = parseInt(query.perPage) || 8;
         let search = query.search || '';
-        let filter = query.filter || ''; 
+        let filter = query.filter || '';
 
         let whereClause = {
             OR: [
@@ -78,8 +78,9 @@ const getContractorForVendor = async (user, query) => {
             whereClause.AND = { status: filter };
         }
 
-        const contractors = await paginate(prisma.contractor, {
+        const contractorsWithOrders = await prisma.contractor.findMany({
             where: whereClause,
+            distinct: ['id'],
             select: {
                 id: true,
                 contractor_id: true,
@@ -88,18 +89,50 @@ const getContractorForVendor = async (user, query) => {
                 name: true,
                 phone: true,
                 email: true,
-                status: true
+                status: true,
+                credit: true
             },
             orderBy: {
                 id: 'desc'
             }
-        }, 
-        { page: page, perPage: perPage });
+        });
 
-        return contractors;
+        const contractorsWithLastOrderedOn = await Promise.all(contractorsWithOrders.map(async (contractor) => {
+            const lastOrderedOn = await prisma.order.findFirst({
+                where: {
+                    contractor_id: contractor.id,
+                    status: 'ACCEPTED'
+                },
+                orderBy: {
+                    delivered_on: 'desc'
+                },
+                select: {
+                    delivered_on: true
+                }
+            });
+
+            return {
+                ...contractor,
+                last_ordered_on: lastOrderedOn ? lastOrderedOn.delivered_on : null
+            };
+        }));
+
+        const formattedData = {
+            data: contractorsWithLastOrderedOn,
+            meta: {
+                total: contractorsWithLastOrderedOn.length,
+                lastPage: 1,
+                currentPage: page,
+                perPage: perPage,
+                prev: null,
+                next: null
+            }
+        };
+
+        return formattedData;
     } catch (err) {
         console.error(err);
-        throw ({status: 500, message: "Cannot get Contractors"});
+        throw { status: 500, message: "Cannot get Contractors" };
     }
 }
 
