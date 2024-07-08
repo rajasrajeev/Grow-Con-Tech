@@ -1,4 +1,4 @@
-const { getOrders, getOrderDetails } = require('../services/order.service');
+const { getOrders, getOrderDetails, uploadEBills } = require('../services/order.service');
 
 const getOrdersHandler = async (req, res, next) => {
     try {
@@ -16,9 +16,18 @@ const getOrderDetailsHandler = async (req, res, next) => {
         next(err);
     }
 }
+const uploadEBillsHandler = async (req, res, next) => {
+    try {
+        const data = await uploadEBills(req.params.id, req.files, req.user, req.body);
+        return res.status(200).send(data);
+    } catch(err) {
+        next(err);
+    }
+}
 
 
 module.exports = {
     getOrdersHandler,
-    getOrderDetailsHandler
+    getOrderDetailsHandler,
+    uploadEBillsHandler
 }

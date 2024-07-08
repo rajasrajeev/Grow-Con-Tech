@@ -96,10 +96,46 @@ const getOrderDetails = async (id, user) => {
     }
 }
 
+const uploadEBills = async (id, files, user) => {
+    try {
+        const order = await prisma.order.findFirst({
+            where: {
+                id: id,
+            }
+        });
+        const orderUpdate = await prisma.order.update({
+            where: {
+                id: id,
+                vendor_id: user.vendor.id,
+                contractor_id: order.contractor_id
+            },
+            data: {
+                e_bill: files.e_bill[0].path
+            }
+        })
+
+        for (const file of files.e_way_bill) {
+            console.log(`Saving e_way_bill info: ${file.filename}, ${file.path}`);
+            // Insert e_way_bill info into the orderEWayBill table with order_id
+            const eWayBill = await prisma.orderEWayBill.create({
+                data: {
+                    order: { connect: { id: order_id } },
+                    file_path: file.path
+                }
+            });
+        }
+        return orderUpdate;
+    } catch (error) {
+        console.log(error);
+        throw { status: 403, message: "Sorry, something went wrong!!!" };
+    }
+}
+
 
 
 
 module.exports = {
     getOrders,
-    getOrderDetails
+    getOrderDetails,
+    uploadEBills
 }

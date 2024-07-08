@@ -21,6 +21,8 @@ var storage = multer.diskStorage({
         let uploadPath = './uploads/files/';
         if(file.fieldname === 'product_image') 
             uploadPath = './uploads/products/';
+        if(file.fieldname === 'e_bill' || file.fieldname === 'e_way_bill') 
+            uploadPath = './uploads/bills/';
 
         if (fileMatch.indexOf(file.mimetype) >= 0)
             callback(null, path.join(uploadPath));
