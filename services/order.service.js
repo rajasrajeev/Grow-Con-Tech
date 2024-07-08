@@ -66,6 +66,7 @@ const getOrderDetails = async (id, user) => {
                 vendor_id: user.vendor.id
             },
             include: {
+                ewaybill: true,
                 product: {
                     select: {
                         id: true, 
@@ -84,8 +85,6 @@ const getOrderDetails = async (id, user) => {
                 },
                 vendor: { select: { id: true, company_name: true } },
                 contractor: { select: { id: true, name: true } },
-                ewaybill: true,
-                e_bill: true
             },
             orderBy: {
                 id: 'desc'
@@ -130,9 +129,24 @@ const uploadEBills = async (id, files, user, body) => {
             },
             include: {
                 ewaybill: true,
-                vendor: true,
-                contractor: true,
-                product: true
+                product: {
+                    select: {
+                        id: true, 
+                        name: true, 
+                        product_image: true, 
+                        category: true,
+                        grade: true, 
+                        unit: true,
+                        dailyRates: {
+                            orderBy: {
+                                created_at: 'desc'
+                            },
+                            take: 1
+                        }
+                    }
+                },
+                vendor: { select: { id: true, company_name: true } },
+                contractor: { select: { id: true, name: true } },
             }
         });
         return orders;
