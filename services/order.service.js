@@ -105,12 +105,11 @@ const uploadEBills = async (id, files, user) => {
         });
         const orderUpdate = await prisma.order.update({
             where: {
-                id: id,
-                vendor_id: user.vendor.id,
-                contractor_id: order.contractor_id
+                id: id
             },
             data: {
-                e_bill: files.e_bill[0].path
+                e_bill: files.e_bill[0].path,
+                status: "PENDING"
             }
         })
 
@@ -119,8 +118,8 @@ const uploadEBills = async (id, files, user) => {
             // Insert e_way_bill info into the orderEWayBill table with order_id
             const eWayBill = await prisma.orderEWayBill.create({
                 data: {
-                    order: { connect: { id: order_id } },
-                    file_path: file.path
+                    order: { connect: { id: id } },
+                    e_way_bill: file.path
                 }
             });
         }

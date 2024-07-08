@@ -18,7 +18,7 @@ const getOrderDetailsHandler = async (req, res, next) => {
 }
 const uploadEBillsHandler = async (req, res, next) => {
     try {
-        const data = await uploadEBills(req.params.id, req.files, req.user);
+        const data = await uploadEBills(parseInt(req.params.id), req.files, req.user);
         return res.status(200).send(data);
     } catch(err) {
         next(err);
