@@ -83,7 +83,9 @@ const getOrderDetails = async (id, user) => {
                     }
                 },
                 vendor: { select: { id: true, company_name: true } },
-                contractor: { select: { id: true, name: true } }
+                contractor: { select: { id: true, name: true } },
+                ewaybill: true,
+                e_bill: true
             },
             orderBy: {
                 id: 'desc'
@@ -96,7 +98,7 @@ const getOrderDetails = async (id, user) => {
     }
 }
 
-const uploadEBills = async (id, files, user) => {
+const uploadEBills = async (id, files, user, body) => {
     try {
         const order = await prisma.order.findFirst({
             where: {
@@ -109,13 +111,12 @@ const uploadEBills = async (id, files, user) => {
             },
             data: {
                 e_bill: files.e_bill[0].path,
-                status: "PENDING"
+                status: "PENDING",
+                tracking_no: body.tracking_no
             }
         })
 
         for (const file of files.e_way_bill) {
-            console.log(`Saving e_way_bill info: ${file.filename}, ${file.path}`);
-            // Insert e_way_bill info into the orderEWayBill table with order_id
             const eWayBill = await prisma.orderEWayBill.create({
                 data: {
                     order: { connect: { id: id } },
@@ -123,7 +124,18 @@ const uploadEBills = async (id, files, user) => {
                 }
             });
         }
-        return orderUpdate;
+        const orders = await prisma.order.findFirst({
+            where: {
+                id: id,
+            },
+            include: {
+                ewaybill: true,
+                vendor: true,
+                contractor: true,
+                product: true
+            }
+        });
+        return orders;
     } catch (error) {
         console.log(error);
         throw { status: 403, message: "Sorry, something went wrong!!!" };

@@ -213,6 +213,7 @@ model Order {
   status         OrderStatus      @default(ACCEPTED)
   delivered_on   DateTime?
   e_bill         String?
+  tracking_no    String?
   created_at     DateTime?        @default(now())
   updated_at     DateTime?        @updatedAt
   ewaybill       OrderEWayBill[]
