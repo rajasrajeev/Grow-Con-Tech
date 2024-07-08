@@ -1,7 +1,8 @@
 const { getVendors, 
         getVendorDetail,
         updateVendorStatus,
-        getMiniList
+        getMiniList,
+        updateCreditLimit
     } = require('../services/vendor.service');
 
 
@@ -43,10 +44,20 @@ const vendorMiniHandler = async (req, res, next) => {
     }
 }
 
+const updateCreditLimitHandler = async (req, res, next) => {
+    try {
+        const data = await updateCreditLimit(req.body, parseInt(req.params.id), req.user);
+        return res.status(200).send(data);
+    } catch(err) {
+        next(err);
+    }
+}
+
 
 module.exports = {
     vendorListHandler,
     vendorDetailHandler,
     vendorStatusHandler,
-    vendorMiniHandler
+    vendorMiniHandler,
+    updateCreditLimitHandler
 }

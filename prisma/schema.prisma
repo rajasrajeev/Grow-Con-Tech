@@ -84,6 +84,8 @@ model Credit {
   amount        Float
   created_at    DateTime      @default(now())
   updated_at    DateTime      @updatedAt
+
+  @@unique([contractor_id, vendor_id])
 }
 
 model Warehouse {

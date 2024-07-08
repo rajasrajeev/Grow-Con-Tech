@@ -121,9 +121,58 @@ const getMiniList = async (query) => {
     }
 }
 
+const updateCreditLimit = async (body, id, user) => {
+    try {
+        // Check if the credit limit already exists
+        const existingCreditLimit = await prisma.credit.findUnique({
+            where: {
+                contractor_id_vendor_id: {
+                    contractor_id: id,
+                    vendor_id: user.vendor.id
+                }
+            }
+        });
+
+        let creditLimit;
+        console.log(existingCreditLimit);
+        if (existingCreditLimit) {
+            // Update the existing credit limit
+            creditLimit = await prisma.credit.update({
+                where: {
+                    id: existingCreditLimit.id
+                },
+                data: {
+                    amount: existingCreditLimit.amount+body.amount
+                }
+            });
+            console.log(creditLimit)
+        } else {
+            // Create a new credit limit
+            creditLimit = await prisma.credit.create({
+                data: {
+                    contractor: {
+                        connect: { id: id }
+                    },
+                    vendor: {
+                        connect: { id: user.vendor.id }
+                    },
+                    amount: body.amount
+                }
+            });
+            console.log(creditLimit)
+        }
+
+        return creditLimit;
+    } catch (err) {
+        console.log(err);
+        throw({status: 500, message: "Cannot update credit limit"});
+    }
+}
+
 module.exports = {
     getVendors,
     getVendorDetail,
     updateVendorStatus,
-    getMiniList
+    getMiniList,
+    updateCreditLimit
 }
