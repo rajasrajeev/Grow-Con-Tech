@@ -167,7 +167,8 @@ const getContractorDetailForVendor = async (id) => {
                     },
                     include: {
                         product: true,
-                        vendor: true
+                        vendor: true,
+                        credit: true
                     }
                 },
                 user: true 
