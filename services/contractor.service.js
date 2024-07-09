@@ -168,10 +168,10 @@ const getContractorDetailForVendor = async (id) => {
                     include: {
                         product: true,
                         vendor: true,
-                        credit: true
+                        
                     }
                 },
-                user: true 
+                credit: true,
             }
           });
         return contractor;
