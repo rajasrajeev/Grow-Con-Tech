@@ -17,6 +17,8 @@ const getOrderDetailsHandler = async (req, res, next) => {
     }
 }
 const uploadEBillsHandler = async (req, res, next) => {
+    console.log(`parsed req.params.id ======> ${parseInt(req.params.id)}`);
+    console.log(`req.params.id ======> ${req.params.id}`)
     try {
         const data = await uploadEBills(parseInt(req.params.id), req.files, req.user, req.body);
         return res.status(200).send(data);
