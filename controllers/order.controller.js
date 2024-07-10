@@ -1,5 +1,6 @@
 const { getOrders, getOrderDetails, uploadEBills } = require('../services/order.service');
 
+
 const getOrdersHandler = async (req, res, next) => {
     try {
         const data = await getOrders(req.query, req.user);
@@ -8,6 +9,7 @@ const getOrdersHandler = async (req, res, next) => {
         next(err);
     }
 }
+
 const getOrderDetailsHandler = async (req, res, next) => {
     try {
         const data = await getOrderDetails(req.params.id, req.user);
@@ -16,9 +18,9 @@ const getOrderDetailsHandler = async (req, res, next) => {
         next(err);
     }
 }
+
+
 const uploadEBillsHandler = async (req, res, next) => {
-    console.log(`parsed req.params.id ======> ${parseInt(req.params.id)}`);
-    console.log(`req.params.id ======> ${req.params.id}`)
     try {
         const data = await uploadEBills(parseInt(req.params.id), req.files, req.user, req.body);
         return res.status(200).send(data);
