@@ -139,7 +139,7 @@ const updateCreditLimit = async (body, id, user) => {
                     id: existingCreditLimit.id
                 },
                 data: {
-                    amount: existingCreditLimit.amount+body.amount
+                    amount: parseFloat(existingCreditLimit.amount) + parseFloat(body.amount)
                 }
             });
         } else {
