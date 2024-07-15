@@ -14,14 +14,14 @@ async function main() {
   // Create states
   const state1 = await prisma.state.create({
     data: {
-      name: 'State 1',
+      name: 'Kerala',
       districts: {
         create: [
           {
-            name: 'District 1-1',
+            name: 'Trivandrum',
           },
           {
-            name: 'District 1-2',
+            name: 'Kollam',
           }
         ]
       },
@@ -30,33 +30,45 @@ async function main() {
 
   const state2 = await prisma.state.create({
     data: {
-      name: 'State 2',
+      name: 'Tamil Nadu',
       districts: {
         create: [
           {
-            name: 'District 2-1',
+            name: 'Chennai',
           },
           {
-            name: 'District 2-2',
+            name: 'Madras',
           }
         ]
       },
     }
   });
-  const grade = await prisma.grade.create({
-    data: {
+  const grade = await prisma.grade.createMany({
+    data: [{
       name: 'Grade 1',
-    }
+    },{
+      name: 'Grade 2',
+    },{
+      name: 'Grade 3',
+    }]
   });
-  const category = await prisma.category.create({
-    data: {
-      name: 'Category 1',
-    }
+  const category = await prisma.category.createMany({
+    data: [{
+      name: 'Cement',
+    },{
+      name: 'Steel',
+    },{
+      name: 'Brick',
+    }]
   });
-  const unit = await prisma.unit.create({
-    data: {
+  const unit = await prisma.unit.createMany({
+    data: [{
       name: 'Kg',
-    }
+    },{
+      name: 'Ton',
+    },{
+      name: 'Meter',
+    }]
   });
 
   const vendorUser = await prisma.user.create({
